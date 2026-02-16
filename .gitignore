@@ -1,0 +1,17 @@
+# Tuist managed
+Derived/
+.build/
+
+# Xcode
+*.xcodeproj
+*.xcworkspace
+xcuserdata/
+DerivedData/
+build/
+
+# macOS
+.DS_Store
+
+# SwiftPM
+.swiftpm/
+Tuist/.build/
