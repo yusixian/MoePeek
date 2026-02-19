@@ -1,4 +1,5 @@
 import AppKit
+import Defaults
 import SwiftUI
 
 /// Manages the lifecycle and positioning of the popup translation panel.
@@ -18,17 +19,24 @@ final class PopupPanelController {
     func showAtCursor() {
         let cursorPos = NSEvent.mouseLocation
 
-        let contentView = PopupView(coordinator: coordinator)
-        let hostingView = NSHostingView(rootView: contentView)
-
-        // Initial size — will be resized after layout
-        let initialSize = CGSize(width: 380, height: 200)
+        // Read default size from user preferences
+        let initialSize = CGSize(
+            width: CGFloat(Defaults[.popupDefaultWidth]),
+            height: CGFloat(Defaults[.popupDefaultHeight])
+        )
 
         if panel == nil {
             panel = PopupPanel(contentRect: NSRect(origin: .zero, size: initialSize))
         }
 
         guard let panel else { return }
+
+        let contentView = PopupView(coordinator: coordinator)
+            .environment(\.popupPanel, panel)
+        let hostingView = NSHostingView(rootView: contentView)
+        // Prevent NSHostingView from auto-resizing the window on content changes,
+        // which causes an infinite constraint update loop during streaming.
+        hostingView.sizingOptions = []
 
         panel.contentView = hostingView
 
@@ -48,26 +56,12 @@ final class PopupPanelController {
         }
         dismissMonitor?.start()
 
-        // Re-layout after SwiftUI settles to get proper content size
-        DispatchQueue.main.async { [weak self] in
-            guard let self, let panel = self.panel else { return }
-            let fittingSize = hostingView.fittingSize
-            let clampedSize = CGSize(
-                width: min(max(fittingSize.width, 280), 500),
-                height: min(max(fittingSize.height, 80), 400)
-            )
-            let newFrame = PopupPositioning.panelFrame(
-                contentSize: clampedSize,
-                cursor: cursorPos,
-                screen: screen
-            )
-            panel.setFrame(newFrame, display: true, animate: false)
-        }
     }
 
     func dismiss() {
         dismissMonitor?.stop()
         dismissMonitor = nil
+        panel?.contentView = nil
         panel?.orderOut(nil)
         coordinator.dismiss()
         onDismiss?()

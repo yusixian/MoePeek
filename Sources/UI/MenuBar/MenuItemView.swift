@@ -1,16 +1,17 @@
+import Defaults
 import KeyboardShortcuts
 import SwiftUI
 
 /// Content for the menu bar dropdown.
 struct MenuItemView: View {
+    @Environment(\.openSettings) private var openSettings
     let appDelegate: AppDelegate
 
-    private var appVersion: String {
-        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
-    }
-
     var body: some View {
-        Text("MoePeek v\(appVersion)")
+        Button("About MoePeek") {
+            Defaults[.selectedSettingsTab] = .about
+            appDelegate.openSettings()
+        }
 
         Divider()
 
@@ -35,7 +36,7 @@ struct MenuItemView: View {
                   let panelController = appDelegate.panelController else { return }
             Task {
                 await coordinator.ocrAndTranslate()
-                if case .error = coordinator.state {
+                if case .idle = coordinator.phase {
                     // Don't show panel on cancel
                 } else {
                     panelController.showAtCursor()
@@ -46,8 +47,8 @@ struct MenuItemView: View {
 
         Divider()
 
-        SettingsLink {
-            Text("设置...")
+        Button("设置...") {
+            appDelegate.openSettings()
         }
 
         Divider()
@@ -56,5 +57,8 @@ struct MenuItemView: View {
             NSApplication.shared.terminate(nil)
         }
         .keyboardShortcut("q")
+        .onReceive(NotificationCenter.default.publisher(for: .openSettings)) { _ in
+            openSettings()
+        }
     }
 }

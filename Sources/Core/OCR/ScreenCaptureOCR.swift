@@ -9,10 +9,22 @@ enum ScreenCaptureOCR {
         process.executableURL = URL(fileURLWithPath: "/usr/sbin/screencapture")
         process.arguments = ["-i", "-c"]
 
-        try process.run()
-        process.waitUntilExit()
+        let status = try await withTaskCancellationHandler {
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Int32, Error>) in
+                process.terminationHandler = { proc in
+                    continuation.resume(returning: proc.terminationStatus)
+                }
+                do {
+                    try process.run()
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        } onCancel: {
+            process.terminate()
+        }
 
-        guard process.terminationStatus == 0 else {
+        guard status == 0 else {
             throw OCRError.captureCancelled
         }
 

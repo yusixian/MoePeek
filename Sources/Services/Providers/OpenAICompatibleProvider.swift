@@ -1,15 +1,46 @@
 import Defaults
 import Foundation
+import SwiftUI
 
-struct OpenAITranslationService: TranslationService {
-    let name = "openai"
+/// A parameterized provider for any OpenAI-compatible API (OpenAI, DeepSeek, Groq, etc.).
+struct OpenAICompatibleProvider: TranslationProvider {
+    let id: String
+    let displayName: String
+    let iconSystemName: String
+    let supportsStreaming = true
+    let isAvailable = true
 
-    func translate(_ text: String, from sourceLang: String?, to targetLang: String) async throws -> String {
-        var result = ""
-        for try await chunk in translateStream(text, from: sourceLang, to: targetLang) {
-            result += chunk
+    // Namespaced Defaults keys
+    let baseURLKey: Defaults.Key<String>
+    let modelKey: Defaults.Key<String>
+    let systemPromptKey: Defaults.Key<String>
+    let keychainKey: String
+
+    init(
+        id: String,
+        displayName: String,
+        iconSystemName: String = "globe",
+        defaultBaseURL: String,
+        defaultModel: String
+    ) {
+        self.id = id
+        self.displayName = displayName
+        self.iconSystemName = iconSystemName
+        self.baseURLKey = .init("provider_\(id)_baseURL", default: defaultBaseURL)
+        self.modelKey = .init("provider_\(id)_model", default: defaultModel)
+        self.systemPromptKey = .init(
+            "provider_\(id)_systemPrompt",
+            default: "Translate the following text to {targetLang}. Only output the translation, nothing else."
+        )
+        self.keychainKey = "provider.\(id).apiKey"
+    }
+
+    @MainActor
+    var isConfigured: Bool {
+        guard let apiKey = KeychainHelper.load(key: keychainKey), !apiKey.isEmpty else {
+            return false
         }
-        return result
+        return true
     }
 
     func translateStream(
@@ -27,7 +58,6 @@ struct OpenAITranslationService: TranslationService {
                         throw TranslationError.invalidResponse
                     }
                     guard httpResponse.statusCode == 200 else {
-                        // Read error body
                         var errorBody = ""
                         for try await line in bytes.lines {
                             errorBody += line
@@ -59,22 +89,27 @@ struct OpenAITranslationService: TranslationService {
         }
     }
 
+    @MainActor
+    func makeSettingsView() -> AnyView {
+        AnyView(OpenAICompatibleSettingsView(provider: self))
+    }
+
     // MARK: - Private
 
     private func buildRequest(text: String, sourceLang: String?, targetLang: String) throws -> URLRequest {
-        let baseURL = Defaults[.openAIBaseURL].trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        let baseURL = Defaults[baseURLKey].trimmingCharacters(in: CharacterSet(charactersIn: "/"))
         guard let url = URL(string: "\(baseURL)/chat/completions") else {
             throw TranslationError.invalidURL
         }
-        guard let apiKey = KeychainHelper.load(key: "openai_api_key"), !apiKey.isEmpty else {
+        guard let apiKey = KeychainHelper.load(key: keychainKey), !apiKey.isEmpty else {
             throw TranslationError.missingAPIKey
         }
 
-        let promptTemplate = Defaults[.systemPromptTemplate]
+        let promptTemplate = Defaults[systemPromptKey]
         let systemPrompt = promptTemplate.replacingOccurrences(of: "{targetLang}", with: targetLang)
 
         let body: [String: Any] = [
-            "model": Defaults[.openAIModel],
+            "model": Defaults[modelKey],
             "stream": true,
             "messages": [
                 ["role": "system", "content": systemPrompt],
@@ -83,6 +118,7 @@ struct OpenAITranslationService: TranslationService {
         ]
 
         var request = URLRequest(url: url)
+        request.timeoutInterval = 30
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
@@ -102,25 +138,5 @@ private struct SSEChunk: Decodable {
 
     struct Delta: Decodable {
         let content: String?
-    }
-}
-
-// MARK: - Errors
-
-enum TranslationError: LocalizedError {
-    case invalidURL
-    case invalidResponse
-    case missingAPIKey
-    case apiError(statusCode: Int, message: String)
-    case emptyResult
-
-    var errorDescription: String? {
-        switch self {
-        case .invalidURL: "Invalid API URL"
-        case .invalidResponse: "Invalid response from server"
-        case .missingAPIKey: "API key not configured. Go to Settings to set it up."
-        case let .apiError(code, msg): "API error (\(code)): \(msg)"
-        case .emptyResult: "Translation returned empty result"
-        }
     }
 }

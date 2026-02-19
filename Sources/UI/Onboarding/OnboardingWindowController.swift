@@ -6,6 +6,7 @@ import SwiftUI
 final class OnboardingWindowController: NSObject, NSWindowDelegate {
     private var window: NSWindow?
     private let permissionManager: PermissionManager
+    var onComplete: (() -> Void)?
 
     init(permissionManager: PermissionManager) {
         self.permissionManager = permissionManager
@@ -23,7 +24,10 @@ final class OnboardingWindowController: NSObject, NSWindowDelegate {
 
         let onboardingView = OnboardingView(
             permissionManager: permissionManager,
-            onComplete: { [weak self] in self?.closeWindow() }
+            onComplete: { [weak self] in
+                self?.closeWindow()
+                self?.onComplete?()
+            }
         )
         let hostingView = NSHostingView(rootView: onboardingView)
 

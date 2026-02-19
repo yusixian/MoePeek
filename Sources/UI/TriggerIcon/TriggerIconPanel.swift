@@ -13,6 +13,7 @@ final class TriggerIconPanel: NSPanel {
             defer: true
         )
 
+        isReleasedWhenClosed = false
         level = .floating
         isOpaque = false
         backgroundColor = .clear

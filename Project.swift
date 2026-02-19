@@ -29,7 +29,18 @@ let project = Project(
             dependencies: [
                 .external(name: "KeyboardShortcuts"),
                 .external(name: "Defaults"),
-            ]
+            ],
+            settings: .settings(
+                base: [
+                    "CODE_SIGN_STYLE": "$(MOEPEEK_CODE_SIGN_STYLE)",
+                    "CODE_SIGN_IDENTITY": "$(MOEPEEK_CODE_SIGN_IDENTITY)",
+                    "DEVELOPMENT_TEAM": "$(MOEPEEK_DEVELOPMENT_TEAM)",
+                ],
+                configurations: [
+                    .debug(name: "Debug", xcconfig: "Configurations/Signing.xcconfig"),
+                    .release(name: "Release", xcconfig: "Configurations/Signing.xcconfig"),
+                ]
+            )
         ),
     ]
 )

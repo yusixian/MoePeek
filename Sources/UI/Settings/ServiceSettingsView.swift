@@ -1,68 +1,97 @@
 import Defaults
 import SwiftUI
 
+/// Settings view for translation providers — left-right split layout.
 struct ServiceSettingsView: View {
-    @Default(.openAIBaseURL) private var baseURL
-    @Default(.openAIModel) private var model
-    @Default(.preferredService) private var preferredService
-    @Default(.systemPromptTemplate) private var systemPrompt
+    let registry: TranslationProviderRegistry
 
-    @State private var apiKey: String = KeychainHelper.load(key: "openai_api_key") ?? ""
-
-    private var isAppleTranslationAvailable: Bool {
-        if #available(macOS 15.0, *) {
-            return true
-        }
-        return false
-    }
+    @Default(.enabledProviders) private var enabledProviders
+    @State private var selectedProviderID: String?
 
     var body: some View {
-        Form {
-            Section("Preferred Service") {
-                Picker("Default Service:", selection: $preferredService) {
-                    Text("OpenAI Compatible").tag("openai")
-                    if isAppleTranslationAvailable {
-                        Text("Apple Translation").tag("apple")
-                    }
-                }
-            }
+        HSplitView {
+            // Left: Provider list
+            providerList
+                .frame(minWidth: 180, idealWidth: 200, maxWidth: 220)
 
-            Section("OpenAI Compatible API") {
-                TextField("Base URL:", text: $baseURL)
-                    .textFieldStyle(.roundedBorder)
-
-                TextField("Model:", text: $model)
-                    .textFieldStyle(.roundedBorder)
-
-                SecureField("API Key:", text: $apiKey)
-                    .textFieldStyle(.roundedBorder)
-                    .onChange(of: apiKey) { _, newValue in
-                        if newValue.isEmpty {
-                            KeychainHelper.delete(key: "openai_api_key")
-                        } else {
-                            KeychainHelper.save(key: "openai_api_key", value: newValue)
-                        }
-                    }
-
-                DisclosureGroup("System Prompt") {
-                    TextEditor(text: $systemPrompt)
-                        .font(.system(.body, design: .monospaced))
-                        .frame(height: 80)
-                    Text("Use {targetLang} as placeholder for target language.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
-
-            if isAppleTranslationAvailable {
-                Section("Apple Translation") {
-                    Text("Available on this system (macOS 15+). No API key needed.")
-                        .foregroundStyle(.secondary)
-                        .font(.callout)
-                }
+            // Right: Selected provider settings
+            providerDetail
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .onAppear {
+            if selectedProviderID == nil {
+                selectedProviderID = registry.providers.first?.id
             }
         }
-        .formStyle(.grouped)
-        .padding()
+    }
+
+    // MARK: - Provider List
+
+    @ViewBuilder
+    private var providerList: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Providers")
+                .font(.headline)
+                .padding(.horizontal, 12)
+                .padding(.top, 12)
+                .padding(.bottom, 8)
+
+            List(selection: $selectedProviderID) {
+                ForEach(registry.providers, id: \.id) { provider in
+                    HStack(spacing: 8) {
+                        Toggle("", isOn: providerEnabledBinding(for: provider.id))
+                            .toggleStyle(.switch)
+                            .controlSize(.mini)
+                            .labelsHidden()
+
+                        Image(systemName: provider.iconSystemName)
+                            .font(.callout)
+                            .frame(width: 16)
+
+                        Text(provider.displayName)
+                            .font(.callout)
+
+                        Spacer()
+                    }
+                    .tag(provider.id)
+                    .contentShape(Rectangle())
+                }
+            }
+            .listStyle(.sidebar)
+        }
+    }
+
+    // MARK: - Provider Detail
+
+    @ViewBuilder
+    private var providerDetail: some View {
+        if let id = selectedProviderID,
+           let provider = registry.provider(withID: id)
+        {
+            ScrollView {
+                provider.makeSettingsView()
+            }
+        } else {
+            ContentUnavailableView(
+                "Select a Provider",
+                systemImage: "globe",
+                description: Text("Choose a provider from the list to configure it.")
+            )
+        }
+    }
+
+    // MARK: - Helpers
+
+    private func providerEnabledBinding(for id: String) -> Binding<Bool> {
+        Binding(
+            get: { enabledProviders.contains(id) },
+            set: { isEnabled in
+                if isEnabled {
+                    enabledProviders.insert(id)
+                } else {
+                    enabledProviders.remove(id)
+                }
+            }
+        )
     }
 }

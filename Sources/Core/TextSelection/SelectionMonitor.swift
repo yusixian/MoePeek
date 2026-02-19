@@ -15,6 +15,12 @@ final class SelectionMonitor {
     private var isSuppressed = false
     private var suppressTask: Task<Void, Never>?
 
+    deinit {
+        if let monitor = mouseDownMonitor { NSEvent.removeMonitor(monitor) }
+        if let monitor = globalMonitor { NSEvent.removeMonitor(monitor) }
+        suppressTask?.cancel()
+    }
+
     func start() {
         guard globalMonitor == nil else { return }
         mouseDownMonitor = NSEvent.addGlobalMonitorForEvents(matching: .leftMouseDown) { [weak self] event in
@@ -51,10 +57,10 @@ final class SelectionMonitor {
     func suppressBriefly() {
         isSuppressed = true
         suppressTask?.cancel()
-        suppressTask = Task { @MainActor in
+        suppressTask = Task { @MainActor [weak self] in
             try? await Task.sleep(for: .milliseconds(500))
             guard !Task.isCancelled else { return }
-            self.isSuppressed = false
+            self?.isSuppressed = false
         }
     }
 
@@ -71,9 +77,10 @@ final class SelectionMonitor {
         }
         mouseDownPoint = nil
 
-        Task { @MainActor in
+        Task { @MainActor [weak self] in
             // Wait 100ms for the target app to update its AX selection state
             try? await Task.sleep(for: .milliseconds(100))
+            guard let self else { return }
 
             // Tier 1: Accessibility API — fast, non-invasive
             if let text = AccessibilityGrabber.grabSelectedText(),

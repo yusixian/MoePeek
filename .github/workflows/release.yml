@@ -1,0 +1,97 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install tools
+        run: |
+          brew install create-dmg
+          curl -Ls https://install.tuist.io | bash
+          tuist version
+
+      - name: Write unsigned Signing.xcconfig
+        run: |
+          cat > Configurations/Signing.xcconfig << 'EOF'
+          MOEPEEK_CODE_SIGN_STYLE = Manual
+          MOEPEEK_CODE_SIGN_IDENTITY = -
+          MOEPEEK_DEVELOPMENT_TEAM =
+          EOF
+
+      - name: Resolve dependencies and generate project
+        run: tuist install && tuist generate
+
+      - name: Determine version
+        id: version
+        run: |
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            VERSION="${{ github.ref_name }}"
+            VERSION="${VERSION#v}"
+          else
+            VERSION="0.0.0-dev"
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Archive
+        run: |
+          xcodebuild archive \
+            -workspace MoePeek.xcworkspace \
+            -scheme MoePeek \
+            -configuration Release \
+            -archivePath build/MoePeek.xcarchive \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Prepare app bundle
+        run: |
+          mkdir -p build/app
+          cp -R build/MoePeek.xcarchive/Products/Applications/MoePeek.app build/app/
+
+      - name: Create ZIP
+        run: |
+          ditto -c -k --sequesterRsrc build/app/MoePeek.app \
+            "MoePeek-v${{ steps.version.outputs.version }}-macOS.zip"
+
+      - name: Create DMG
+        run: |
+          create-dmg \
+            --volname "MoePeek" \
+            --window-pos 200 120 \
+            --window-size 660 400 \
+            --icon-size 160 \
+            --icon "MoePeek.app" 180 170 \
+            --app-drop-link 480 170 \
+            --hide-extension "MoePeek.app" \
+            "MoePeek-v${{ steps.version.outputs.version }}-macOS.dmg" \
+            build/app/ \
+            || test $? -eq 1
+
+      - name: Upload artifact (manual trigger)
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: MoePeek-v${{ steps.version.outputs.version }}-macOS
+          path: |
+            MoePeek-v${{ steps.version.outputs.version }}-macOS.zip
+            MoePeek-v${{ steps.version.outputs.version }}-macOS.dmg
+
+      - name: Create GitHub Release (tag push)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            MoePeek-v${{ steps.version.outputs.version }}-macOS.zip
+            MoePeek-v${{ steps.version.outputs.version }}-macOS.dmg

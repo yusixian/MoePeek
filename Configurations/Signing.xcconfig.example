@@ -1,6 +1,7 @@
 // Code Signing Configuration
 // Copy this file to Signing.xcconfig and fill in your values.
+// Use MOEPEEK_ prefix to avoid being overridden by Tuist defaults.
 
-CODE_SIGN_STYLE = Manual
-CODE_SIGN_IDENTITY = Apple Development: YOUR_NAME (YOUR_TEAM_ID)
-DEVELOPMENT_TEAM = YOUR_TEAM_ID
+MOEPEEK_CODE_SIGN_STYLE = Manual
+MOEPEEK_CODE_SIGN_IDENTITY = Apple Development: YOUR_NAME (YOUR_TEAM_ID)
+MOEPEEK_DEVELOPMENT_TEAM = YOUR_TEAM_ID

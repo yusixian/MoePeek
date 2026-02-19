@@ -6,6 +6,9 @@ import SwiftUI
 struct GeneralSettingsView: View {
     @Default(.targetLanguage) private var targetLanguage
     @Default(.isAutoDetectEnabled) private var isAutoDetectEnabled
+    @Default(.showInDock) private var showInDock
+    @Default(.popupDefaultWidth) private var popupDefaultWidth
+    @Default(.popupDefaultHeight) private var popupDefaultHeight
 
     @State private var launchAtLogin = SMAppService.mainApp.status == .enabled
 
@@ -48,6 +51,38 @@ struct GeneralSettingsView: View {
                             launchAtLogin = !newValue // Revert on failure
                         }
                     }
+
+                Toggle("在程序坞中显示图标", isOn: $showInDock)
+                    .onChange(of: showInDock) { _, newValue in
+                        NSApp.setActivationPolicy(newValue ? .regular : .accessory)
+                        if !newValue {
+                            NSApp.activate(ignoringOtherApps: true)
+                        }
+                    }
+            }
+
+            Section("弹出面板") {
+                LabeledContent("默认宽度: \(popupDefaultWidth)") {
+                    Slider(
+                        value: Binding(
+                            get: { Double(popupDefaultWidth) },
+                            set: { popupDefaultWidth = Int($0) }
+                        ),
+                        in: 280...800,
+                        step: 10
+                    )
+                }
+
+                LabeledContent("默认高度: \(popupDefaultHeight)") {
+                    Slider(
+                        value: Binding(
+                            get: { Double(popupDefaultHeight) },
+                            set: { popupDefaultHeight = Int($0) }
+                        ),
+                        in: 200...800,
+                        step: 10
+                    )
+                }
             }
         }
         .formStyle(.grouped)
