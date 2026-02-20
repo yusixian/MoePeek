@@ -43,6 +43,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.onboardingController.showWindow()
             }
+        } else if !permissionManager.allPermissionsGranted {
+            // Permissions lost after update — show a simplified recovery prompt.
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                self.onboardingController.showPermissionRecovery()
+            }
         }
         if !permissionManager.allPermissionsGranted {
             permissionManager.startPolling()

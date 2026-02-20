@@ -20,6 +20,47 @@ final class OnboardingWindowController: NSObject, NSWindowDelegate {
     }
 
     func showWindow() {
+        let onboardingView = OnboardingView(
+            permissionManager: permissionManager,
+            registry: registry,
+            onComplete: { [weak self] in
+                self?.closeWindow()
+            }
+        )
+        presentWindow(contentView: onboardingView, size: NSSize(width: 380, height: 480))
+    }
+
+    func showPermissionRecovery() {
+        let recoveryView = PermissionRecoveryView(
+            permissionManager: permissionManager,
+            onAllGranted: { [weak self] in
+                self?.closeWindow()
+            }
+        )
+        presentWindow(contentView: recoveryView, size: NSSize(width: 380, height: 320))
+    }
+
+    func closeWindow() {
+        restorePolicyIfNeeded()
+        window?.contentView = nil
+        window?.close()
+        window = nil
+    }
+
+    // MARK: - NSWindowDelegate
+
+    nonisolated func windowWillClose(_: Notification) {
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            self.restorePolicyIfNeeded()
+            self.window?.contentView = nil
+            self.window = nil
+        }
+    }
+
+    // MARK: - Private
+
+    private func presentWindow(contentView: some View, size: NSSize) {
         if let window, window.isVisible {
             NSApp.activate(ignoringOtherApps: true)
             window.makeKeyAndOrderFront(nil)
@@ -33,17 +74,9 @@ final class OnboardingWindowController: NSObject, NSWindowDelegate {
             needsRestorePolicy = true
         }
 
-        let onboardingView = OnboardingView(
-            permissionManager: permissionManager,
-            registry: registry,
-            onComplete: { [weak self] in
-                self?.closeWindow()
-            }
-        )
-        let hostingView = NSHostingView(rootView: onboardingView)
-
+        let hostingView = NSHostingView(rootView: contentView)
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 380, height: 480),
+            contentRect: NSRect(origin: .zero, size: size),
             styleMask: [.titled, .closable],
             backing: .buffered,
             defer: false
@@ -62,24 +95,6 @@ final class OnboardingWindowController: NSObject, NSWindowDelegate {
         NSApp.activate(ignoringOtherApps: true)
         window.makeKeyAndOrderFront(nil)
     }
-
-    func closeWindow() {
-        restorePolicyIfNeeded()
-        window?.close()
-        window = nil
-    }
-
-    // MARK: - NSWindowDelegate
-
-    nonisolated func windowWillClose(_: Notification) {
-        Task { @MainActor [weak self] in
-            guard let self else { return }
-            self.restorePolicyIfNeeded()
-            self.window = nil
-        }
-    }
-
-    // MARK: - Private
 
     /// Restore .accessory policy unless user has showInDock enabled.
     /// Idempotent — safe to call from both `closeWindow()` and `windowWillClose`.

@@ -22,6 +22,17 @@
         }
       }
     },
+    "Accessibility" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "辅助功能"
+          }
+        }
+      }
+    },
     "Accessibility Permission" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -40,6 +51,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "辅助功能权限未授权。请前往设置中开启。"
+          }
+        }
+      }
+    },
+    "After updating, macOS may revoke previously granted permissions. Please re-authorize below." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "应用更新后，macOS 可能会撤销之前授予的权限。请在下方重新授权。"
           }
         }
       }
@@ -76,6 +97,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "API Key 未配置。请前往设置进行配置。"
+          }
+        }
+      }
+    },
+    "App Language" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "应用语言"
+          }
+        }
+      }
+    },
+    "App Language:" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "应用语言："
           }
         }
       }
@@ -186,6 +229,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "系统内置翻译，无需 API Key（macOS 15+）"
+          }
+        }
+      }
+    },
+    "Changing language requires restarting the app." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更改语言需要重新启动应用。"
           }
         }
       }
@@ -561,6 +614,17 @@
         }
       }
     },
+    "Later" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "稍后"
+          }
+        }
+      }
+    },
     "Launch at Login" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -790,6 +854,16 @@
         }
       }
     },
+    "Permissions Need Re-Authorization" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "权限需要重新授权"
+          }
+        }
+      }
+    },
     "Please enter a valid Base URL (starting with http:// or https://) and API Key" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -898,6 +972,39 @@
         }
       }
     },
+    "Required for OCR screenshot translation" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用于 OCR 截图翻译"
+          }
+        }
+      }
+    },
+    "Required for reading selected text" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用于读取选中的文本"
+          }
+        }
+      }
+    },
+    "Restart Now" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "立即重启"
+          }
+        }
+      }
+    },
     "Retry" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -916,6 +1023,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "截图已取消"
+          }
+        }
+      }
+    },
+    "Screen Recording" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "屏幕录制"
           }
         }
       }
@@ -1083,6 +1201,17 @@
         }
       }
     },
+    "System Default" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "跟随系统"
+          }
+        }
+      }
+    },
     "System Prompt" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -1228,66 +1357,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "等待中…"
-          }
-        }
-      }
-    },
-    "System Default" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "跟随系统"
-          }
-        }
-      }
-    },
-    "App Language:" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "应用语言："
-          }
-        }
-      }
-    },
-    "App Language" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "应用语言"
-          }
-        }
-      }
-    },
-    "Changing language requires restarting the app." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "更改语言需要重新启动应用。"
-          }
-        }
-      }
-    },
-    "Restart Now" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "立即重启"
-          }
-        }
-      }
-    },
-    "Later" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "稍后"
           }
         }
       }
