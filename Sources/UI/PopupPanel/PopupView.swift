@@ -20,7 +20,7 @@ struct PopupView: View {
                 HStack(spacing: 8) {
                     ProgressView()
                         .controlSize(.small)
-                    Text("Grabbing text...")
+                    Text("Grabbing text…")
                         .foregroundStyle(.secondary)
                 }
                 .padding(14)
@@ -97,7 +97,7 @@ struct PopupView: View {
                             .foregroundStyle(.secondary)
                     }
                     .buttonStyle(.plain)
-                    .help("打开设置")
+                    .help("Open Settings")
                 }
                 .padding(.horizontal, 10)
                 .padding(.vertical, 4)

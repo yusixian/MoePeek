@@ -31,7 +31,7 @@ struct OpenAICompatibleSettingsView: View {
                 TextEditor(text: Defaults.binding(provider.systemPromptKey))
                     .font(.system(.body, design: .monospaced))
                     .frame(height: 80)
-                Text("Use {targetLang} as placeholder for target language.")
+                Text("Use {targetLang} as a placeholder for the target language.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

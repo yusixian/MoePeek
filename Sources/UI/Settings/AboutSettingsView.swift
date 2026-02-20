@@ -35,7 +35,7 @@ struct AboutSettingsView: View {
 
             HStack {
                 Link(destination: URL(string: "https://discord.gg/placeholder")!) {
-                    Label("Discord 反馈", systemImage: "bubble.left.and.bubble.right")
+                    Label("Discord Feedback", systemImage: "bubble.left.and.bubble.right")
                 }
                 .buttonStyle(.link)
             }

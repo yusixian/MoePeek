@@ -24,6 +24,7 @@ let project = Project(
             bundleId: "com.nahida.MoePeek",
             deploymentTargets: .macOS("14.0"),
             infoPlist: .extendingDefault(with: [
+                "CFBundleDevelopmentRegion": "en",
                 "CFBundleShortVersionString": "$(MARKETING_VERSION)",
                 "CFBundleVersion": "$(CURRENT_PROJECT_VERSION)",
             ]),

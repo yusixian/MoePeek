@@ -14,7 +14,7 @@ struct AppleTranslationProvider: TranslationProvider {
     let isAvailable = true
 
     /// Languages supported by Apple Translation framework.
-    static var supportedLanguageCodes: Set<String> { SupportedLanguages.codes }
+    static var supportedLanguageCodes: Set<String> { SupportedLanguages.codeSet }
 
     @MainActor
     var isConfigured: Bool { true }
@@ -186,11 +186,11 @@ struct LanguageDownloadView: View {
 
         var label: String {
             switch self {
-            case .checking: "Checking…"
-            case .installed: "Installed"
-            case .needsDownload: "Needs download"
-            case .unsupported: "Unsupported"
-            case .unknown: "Unknown"
+            case .checking: String(localized: "Checking…")
+            case .installed: String(localized: "Installed")
+            case .needsDownload: String(localized: "Needs download")
+            case .unsupported: String(localized: "Unsupported")
+            case .unknown: String(localized: "Unknown")
             }
         }
 

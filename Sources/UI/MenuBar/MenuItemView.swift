@@ -23,7 +23,7 @@ struct MenuItemView: View {
             coordinator.prepareInputMode()
             panelController.showAtScreenCenter()
         } label: {
-            Label("手动翻译", systemImage: "keyboard")
+            Label("Manual Translation", systemImage: "keyboard")
         }
         .keyboardShortcut("a", modifiers: .option)
 
@@ -36,7 +36,7 @@ struct MenuItemView: View {
                 panelController.showAtCursor()
             }
         } label: {
-            Label("截图 OCR", systemImage: "text.viewfinder")
+            Label("Screenshot OCR", systemImage: "text.viewfinder")
         }
         .keyboardShortcut("s", modifiers: .option)
 
@@ -48,7 +48,7 @@ struct MenuItemView: View {
                 panelController.showAtCursor()
             }
         } label: {
-            Label("选中翻译", systemImage: "text.cursor")
+            Label("Selection Translation", systemImage: "text.cursor")
         }
         .keyboardShortcut("d", modifiers: .option)
 
@@ -58,7 +58,7 @@ struct MenuItemView: View {
             coordinator.translateClipboard()
             panelController.showAtCursor()
         } label: {
-            Label("剪贴翻译", systemImage: "doc.on.clipboard")
+            Label("Clipboard Translation", systemImage: "doc.on.clipboard")
         }
         .keyboardShortcut("v", modifiers: .option)
 
@@ -67,19 +67,19 @@ struct MenuItemView: View {
         Button {
             appDelegate.onboardingController.showWindow()
         } label: {
-            Label("引导设置...", systemImage: "questionmark.circle")
+            Label("Onboarding Guide...", systemImage: "questionmark.circle")
         }
 
         Button {
             openSettings()
         } label: {
-            Label("设置...", systemImage: "gearshape")
+            Label("Settings...", systemImage: "gearshape")
         }
         .keyboardShortcut(",")
 
         Divider()
 
-        Button("退出 MoePeek") {
+        Button("Quit MoePeek") {
             NSApplication.shared.terminate(nil)
         }
         .keyboardShortcut("q")

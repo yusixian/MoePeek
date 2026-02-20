@@ -80,9 +80,9 @@ enum OCRError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .captureCancelled: "Screen capture was cancelled"
-        case .noImageInClipboard: "No image found in clipboard after capture"
-        case .noTextRecognized: "No text was recognized in the captured image"
+        case .captureCancelled: String(localized: "Screen capture was cancelled")
+        case .noImageInClipboard: String(localized: "No image found in clipboard after capture")
+        case .noTextRecognized: String(localized: "No text was recognized in the captured image")
         }
     }
 }

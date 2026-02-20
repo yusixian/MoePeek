@@ -17,23 +17,23 @@ struct GeneralSettingsView: View {
 
     var body: some View {
         Form {
-            Section("快捷键") {
-                KeyboardShortcuts.Recorder("选中翻译:", name: .translateSelection)
-                KeyboardShortcuts.Recorder("截图 OCR:", name: .ocrScreenshot)
-                KeyboardShortcuts.Recorder("手动翻译:", name: .inputTranslation)
-                KeyboardShortcuts.Recorder("剪贴翻译:", name: .clipboardTranslation)
+            Section("Keyboard Shortcuts") {
+                KeyboardShortcuts.Recorder("Selection Translation:", name: .translateSelection)
+                KeyboardShortcuts.Recorder("Screenshot OCR:", name: .ocrScreenshot)
+                KeyboardShortcuts.Recorder("Manual Translation:", name: .inputTranslation)
+                KeyboardShortcuts.Recorder("Clipboard Translation:", name: .clipboardTranslation)
             }
 
-            Section("通用") {
-                Picker("目标语言:", selection: $targetLanguage) {
+            Section("General") {
+                Picker("Target Language:", selection: $targetLanguage) {
                     ForEach(SupportedLanguages.all, id: \.code) { code, name in
                         Text(name).tag(code)
                     }
                 }
 
-                Toggle("选中文字自动翻译", isOn: $isAutoDetectEnabled)
+                Toggle("Auto-translate selected text", isOn: $isAutoDetectEnabled)
 
-                Toggle("登录时启动", isOn: $launchAtLogin)
+                Toggle("Launch at Login", isOn: $launchAtLogin)
                     .onChange(of: launchAtLogin) { _, newValue in
                         do {
                             if newValue {
@@ -46,7 +46,7 @@ struct GeneralSettingsView: View {
                         }
                     }
 
-                Toggle("在程序坞中显示图标", isOn: $showInDock)
+                Toggle("Show Dock icon", isOn: $showInDock)
                     .onChange(of: showInDock) { _, newValue in
                         NSApp.setActivationPolicy(newValue ? .regular : .accessory)
                         if !newValue {
@@ -55,8 +55,8 @@ struct GeneralSettingsView: View {
                     }
             }
 
-            Section("语言检测") {
-                Toggle("自动检测源语言", isOn: $isLanguageDetectionEnabled)
+            Section("Language Detection") {
+                Toggle("Auto-detect source language", isOn: $isLanguageDetectionEnabled)
                     .onChange(of: isLanguageDetectionEnabled) { _, newValue in
                         if !newValue, sourceLanguage == "auto" {
                             sourceLanguage = Defaults[.targetLanguage].hasPrefix("zh") ? "en" : "zh-Hans"
@@ -64,21 +64,21 @@ struct GeneralSettingsView: View {
                     }
 
                 if isLanguageDetectionEnabled {
-                    Picker("偏好源语言:", selection: $sourceLanguage) {
-                        Text("无偏好").tag("auto")
+                    Picker("Preferred Source Language:", selection: $sourceLanguage) {
+                        Text("No Preference").tag("auto")
                         ForEach(SupportedLanguages.all, id: \.code) { code, name in
                             Text(name).tag(code)
                         }
                     }
 
-                    LabeledContent("检测灵敏度: \(confidenceThreshold, specifier: "%.1f")") {
+                    LabeledContent("Detection Sensitivity: \(confidenceThreshold, specifier: "%.1f")") {
                         Slider(value: $confidenceThreshold, in: 0.1...0.8, step: 0.1)
                     }
-                    Text("较低 = 更积极检测（可能不准）；较高 = 更保守（可能返回未知）")
+                    Text("Lower = more aggressive detection (may be inaccurate); Higher = more conservative (may return unknown)")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 } else {
-                    Picker("源语言:", selection: $sourceLanguage) {
+                    Picker("Source Language:", selection: $sourceLanguage) {
                         ForEach(SupportedLanguages.all, id: \.code) { code, name in
                             Text(name).tag(code)
                         }
@@ -86,8 +86,8 @@ struct GeneralSettingsView: View {
                 }
             }
 
-            Section("弹出面板") {
-                LabeledContent("默认宽度: \(popupDefaultWidth)") {
+            Section("Popup Panel") {
+                LabeledContent("Default Width: \(popupDefaultWidth)") {
                     Slider(
                         value: Binding(
                             get: { Double(popupDefaultWidth) },
@@ -98,7 +98,7 @@ struct GeneralSettingsView: View {
                     )
                 }
 
-                LabeledContent("默认高度: \(popupDefaultHeight)") {
+                LabeledContent("Default Height: \(popupDefaultHeight)") {
                     Slider(
                         value: Binding(
                             get: { Double(popupDefaultHeight) },

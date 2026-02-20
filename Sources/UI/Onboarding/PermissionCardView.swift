@@ -3,8 +3,8 @@ import SwiftUI
 /// A reusable card showing permission status with an action button.
 struct PermissionCardView: View {
     let icon: String
-    let title: String
-    let description: String
+    let title: LocalizedStringKey
+    let description: LocalizedStringKey
     let isGranted: Bool
     let onOpenSettings: () -> Void
 
@@ -26,7 +26,7 @@ struct PermissionCardView: View {
             Spacer()
 
             if isGranted {
-                Text("已授权")
+                Text("Granted")
                     .font(.caption)
                     .fontWeight(.medium)
                     .foregroundStyle(.green)
@@ -34,7 +34,7 @@ struct PermissionCardView: View {
                     .padding(.vertical, 4)
                     .background(.green.opacity(0.1), in: Capsule())
             } else {
-                Button("打开设置") {
+                Button("Open Settings") {
                     onOpenSettings()
                 }
                 .controlSize(.small)

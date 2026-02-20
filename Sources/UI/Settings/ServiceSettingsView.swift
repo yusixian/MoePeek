@@ -73,7 +73,7 @@ struct ServiceSettingsView: View {
             }
         } else {
             ContentUnavailableView(
-                "Select a Provider",
+                "Select a provider",
                 systemImage: "globe",
                 description: Text("Choose a provider from the list to configure it.")
             )

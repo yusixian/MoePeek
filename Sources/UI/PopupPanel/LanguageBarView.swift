@@ -55,6 +55,6 @@ struct LanguageBarView: View {
             }
             return name
         }
-        return "Auto Detect"
+        return String(localized: "Auto Detect")
     }
 }

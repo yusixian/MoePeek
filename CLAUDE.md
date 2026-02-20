@@ -61,6 +61,16 @@ User Action (shortcut / mouse selection / OCR)
 | `Sources/UI/` | PopupPanel, TriggerIcon, MenuBar, Settings, Onboarding |
 | `Sources/Utilities/` | Constants (Defaults keys, keyboard shortcuts), KeychainHelper, positioning |
 
+### Internationalization (i18n)
+
+The app supports **English** (development language) and **Simplified Chinese** (zh-Hans) via Xcode String Catalogs.
+
+- **`Resources/Localizable.xcstrings`** — Single String Catalog containing all localized strings with en keys and zh-Hans translations.
+- **SwiftUI views** use string literals as `LocalizedStringKey` (automatic lookup).
+- **Non-UI code** (errors, coordinators) uses `String(localized:)` for runtime localization.
+- **`SupportedLanguages`** in `Constants.swift` uses `Locale.current.localizedString(forIdentifier:)` for dynamic language names.
+- Strings that should **NOT** be localized: API technical labels (`"Base URL:"`, `"API Key:"`, `"Model:"`), LLM system prompts, provider IDs, copyright/license text, brand name "MoePeek".
+
 ### Critical Files
 
 - **`TranslationCoordinator.swift`** — Central orchestrator with state machine; all translation flows route through here

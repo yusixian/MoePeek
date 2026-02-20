@@ -45,7 +45,7 @@ final class TranslationCoordinator {
         guard permissionManager.isAccessibilityGranted else {
             phase = .active
             sourceText = ""
-            globalError = "Accessibility permission not granted. Open Settings to enable it."
+            globalError = String(localized: "Accessibility permission not granted. Open Settings to enable it.")
             return
         }
 
@@ -54,7 +54,7 @@ final class TranslationCoordinator {
         guard let text = await TextSelectionManager.grabSelectedText() else {
             phase = .active
             sourceText = ""
-            globalError = "No text selected. Select some text and try again."
+            globalError = String(localized: "No text selected. Select some text and try again.")
             return
         }
 
@@ -73,7 +73,7 @@ final class TranslationCoordinator {
         } catch {
             phase = .active
             sourceText = ""
-            globalError = "OCR failed: \(error.localizedDescription)"
+            globalError = String(localized: "OCR failed: \(error.localizedDescription)")
         }
     }
 
@@ -83,7 +83,7 @@ final class TranslationCoordinator {
               !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             phase = .active
             sourceText = ""
-            globalError = "剪贴板为空，请先复制一些文字。"
+            globalError = String(localized: "Clipboard is empty. Copy some text first.")
             return
         }
         translate(text)
@@ -108,7 +108,7 @@ final class TranslationCoordinator {
         guard !trimmed.isEmpty else {
             phase = .active
             sourceText = ""
-            globalError = "Empty text"
+            globalError = String(localized: "Empty text")
             return
         }
 
@@ -141,7 +141,7 @@ final class TranslationCoordinator {
 
         let providers = registry.enabledProviders
         guard !providers.isEmpty else {
-            globalError = "No providers enabled. Enable at least one in Settings."
+            globalError = String(localized: "No providers enabled. Enable at least one in Settings.")
             return
         }
 

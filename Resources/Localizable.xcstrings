@@ -1,0 +1,678 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "auto": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "自动" }
+        }
+      }
+    },
+    "Accessibility permission not granted. Open Settings to enable it.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "辅助功能权限未授权。请前往设置中开启。" }
+        }
+      }
+    },
+    "No text selected. Select some text and try again.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "没有选中文字。请选中一些文字后重试。" }
+        }
+      }
+    },
+    "OCR failed: %@": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "OCR 失败：%@" }
+        }
+      }
+    },
+    "Clipboard is empty. Copy some text first.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "剪贴板为空，请先复制一些文字。" }
+        }
+      }
+    },
+    "Empty text": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "文本为空" }
+        }
+      }
+    },
+    "No providers enabled. Enable at least one in Settings.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "没有启用翻译服务。请在设置中至少启用一个。" }
+        }
+      }
+    },
+    "Invalid API URL": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "无效的 API URL" }
+        }
+      }
+    },
+    "Invalid response from server": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "服务器返回了无效的响应" }
+        }
+      }
+    },
+    "API key not configured. Go to Settings to set it up.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "API Key 未配置。请前往设置进行配置。" }
+        }
+      }
+    },
+    "API error (%lld): %@": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "API 错误（%lld）：%@" }
+        }
+      }
+    },
+    "Translation returned empty result": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "翻译返回了空结果" }
+        }
+      }
+    },
+    "Language pack not downloaded (%@ → %@). Download it in Settings or try another provider.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "语言包未下载（%1$@ → %2$@）。请在设置中下载或尝试其他翻译服务。" }
+        }
+      }
+    },
+    "Language pair not supported (%@ → %@). Try another provider.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "不支持该语言对（%1$@ → %2$@）。请尝试其他翻译服务。" }
+        }
+      }
+    },
+    "Translation session ended unexpectedly. Please try again.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "翻译会话意外结束。请重试。" }
+        }
+      }
+    },
+    "Screen capture was cancelled": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "截图已取消" }
+        }
+      }
+    },
+    "No image found in clipboard after capture": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "截图后未在剪贴板中找到图像" }
+        }
+      }
+    },
+    "No text was recognized in the captured image": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "未在截取的图像中识别到文字" }
+        }
+      }
+    },
+    "OpenAI-compatible API, requires API Key": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "OpenAI 兼容 API，需要配置 API Key" }
+        }
+      }
+    },
+    "Built-in system translation, no API Key needed (macOS 15+)": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "系统内置翻译，无需 API Key（macOS 15+）" }
+        }
+      }
+    },
+    "Auto Detect": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "自动检测" }
+        }
+      }
+    },
+    "Checking…": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "检查中…" }
+        }
+      }
+    },
+    "Installed": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "已安装" }
+        }
+      }
+    },
+    "Needs download": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "需要下载" }
+        }
+      }
+    },
+    "Unsupported": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "不支持" }
+        }
+      }
+    },
+    "Unknown": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "未知" }
+        }
+      }
+    },
+    "Previous": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "上一步" }
+        }
+      }
+    },
+    "Begin Setup": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "开始设置" }
+        }
+      }
+    },
+    "Next": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "下一步" }
+        }
+      }
+    },
+    "Skip": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "跳过" }
+        }
+      }
+    },
+    "Get Started": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "开始使用" }
+        }
+      }
+    },
+    "Menu Bar Translation Tool": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "菜单栏翻译工具" }
+        }
+      }
+    },
+    "The following permissions are required.\nWe'll guide you through the setup.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "需要以下权限才能正常工作，\n接下来将引导你逐步完成设置。" }
+        }
+      }
+    },
+    "Accessibility Permission": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "辅助功能权限" }
+        }
+      }
+    },
+    "MoePeek needs accessibility permission to read your selected text. This is essential for text selection translation.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "MoePeek 需要辅助功能权限来读取你选中的文本，这是划词翻译的核心功能。" }
+        }
+      }
+    },
+    "Screen Recording Permission": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "屏幕录制权限" }
+        }
+      }
+    },
+    "MoePeek needs screen recording permission for OCR screenshot translation to recognize text on screen.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "MoePeek 需要屏幕录制权限来进行 OCR 截图翻译，识别屏幕上的文字。" }
+        }
+      }
+    },
+    "Select Translation Service": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "选择翻译服务" }
+        }
+      }
+    },
+    "Enable at least one translation service.\nYou can enable multiple services for comparison.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "至少启用一个翻译服务才能使用翻译功能。\n你可以同时启用多个服务进行对比。" }
+        }
+      }
+    },
+    "Please select at least one translation service": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "请至少选择一个翻译服务" }
+        }
+      }
+    },
+    "Configure OpenAI API": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "配置 OpenAI API" }
+        }
+      }
+    },
+    "Enter your API Key to use the OpenAI translation service.\nYou can also configure this later in Settings.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "输入你的 API Key 以使用 OpenAI 翻译服务。\n你也可以稍后在设置中配置。" }
+        }
+      }
+    },
+    "Apple Translation Language Packs": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "Apple Translation 语言包" }
+        }
+      }
+    },
+    "Apple Translation requires language packs for offline translation.\nSelect a language pair and download, or do it later in Settings.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "Apple Translation 需要下载语言包才能离线翻译。\n选择常用语言对并下载，或稍后在设置中下载。" }
+        }
+      }
+    },
+    "Granted": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "已授权" }
+        }
+      }
+    },
+    "Open System Settings": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "打开系统设置" }
+        }
+      }
+    },
+    "Status updates automatically after granting": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "授权后状态会自动更新" }
+        }
+      }
+    },
+    "Source Language": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "源语言" }
+        }
+      }
+    },
+    "Target Language": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "目标语言" }
+        }
+      }
+    },
+    "Check & Download": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "检查并下载" }
+        }
+      }
+    },
+    "Open Settings": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "打开设置" }
+        }
+      }
+    },
+    "Keyboard Shortcuts": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "快捷键" }
+        }
+      }
+    },
+    "Selection Translation:": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "选中翻译：" }
+        }
+      }
+    },
+    "Screenshot OCR:": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "截图 OCR：" }
+        }
+      }
+    },
+    "Manual Translation:": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "手动翻译：" }
+        }
+      }
+    },
+    "Clipboard Translation:": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "剪贴翻译：" }
+        }
+      }
+    },
+    "General": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "通用" }
+        }
+      }
+    },
+    "Target Language:": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "目标语言：" }
+        }
+      }
+    },
+    "Auto-translate selected text": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "选中文字自动翻译" }
+        }
+      }
+    },
+    "Launch at Login": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "登录时启动" }
+        }
+      }
+    },
+    "Show Dock icon": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "在程序坞中显示图标" }
+        }
+      }
+    },
+    "Language Detection": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "语言检测" }
+        }
+      }
+    },
+    "Auto-detect source language": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "自动检测源语言" }
+        }
+      }
+    },
+    "Preferred Source Language:": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "偏好源语言：" }
+        }
+      }
+    },
+    "No Preference": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "无偏好" }
+        }
+      }
+    },
+    "Detection Sensitivity: %@": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "检测灵敏度：%@" }
+        }
+      }
+    },
+    "Lower = more aggressive detection (may be inaccurate); Higher = more conservative (may return unknown)": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "较低 = 更积极检测（可能不准）；较高 = 更保守（可能返回未知）" }
+        }
+      }
+    },
+    "Source Language:": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "源语言：" }
+        }
+      }
+    },
+    "Popup Panel": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "弹出面板" }
+        }
+      }
+    },
+    "Default Width: %lld": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "默认宽度：%lld" }
+        }
+      }
+    },
+    "Default Height: %lld": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "默认高度：%lld" }
+        }
+      }
+    },
+    "Manual Translation": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "手动翻译" }
+        }
+      }
+    },
+    "Screenshot OCR": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "截图 OCR" }
+        }
+      }
+    },
+    "Selection Translation": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "选中翻译" }
+        }
+      }
+    },
+    "Clipboard Translation": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "剪贴翻译" }
+        }
+      }
+    },
+    "Onboarding Guide...": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "引导设置..." }
+        }
+      }
+    },
+    "Settings...": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "设置..." }
+        }
+      }
+    },
+    "Quit MoePeek": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "退出 MoePeek" }
+        }
+      }
+    },
+    "Discord Feedback": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "Discord 反馈" }
+        }
+      }
+    },
+    "Grabbing text…": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "正在获取文字…" }
+        }
+      }
+    },
+    "Waiting…": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "等待中…" }
+        }
+      }
+    },
+    "Translating…": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "翻译中…" }
+        }
+      }
+    },
+    "Copy": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "复制" }
+        }
+      }
+    },
+    "Retry": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "重试" }
+        }
+      }
+    },
+    "↵ Translate · ⇧↵ Newline": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "↵ 翻译 · ⇧↵ 换行" }
+        }
+      }
+    },
+    "Providers": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "翻译服务" }
+        }
+      }
+    },
+    "Select a provider": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "选择翻译服务" }
+        }
+      }
+    },
+    "Choose a provider from the list to configure it.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "从列表中选择一个翻译服务进行配置。" }
+        }
+      }
+    },
+    "Services": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "服务" }
+        }
+      }
+    },
+    "About": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "关于" }
+        }
+      }
+    },
+    "Use {targetLang} as a placeholder for the target language.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "使用 {targetLang} 作为目标语言的占位符。" }
+        }
+      }
+    },
+    "Status": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "状态" }
+        }
+      }
+    },
+    "Available on this system (macOS 15+). No API key needed.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "在此系统上可用（macOS 15+），无需 API Key。" }
+        }
+      }
+    },
+    "Language Packs": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "语言包" }
+        }
+      }
+    },
+    "From:": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "源语言：" }
+        }
+      }
+    },
+    "To:": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "目标语言：" }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

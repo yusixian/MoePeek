@@ -5,26 +5,21 @@ import KeyboardShortcuts
 
 /// Languages available for translation UI and provider checks.
 enum SupportedLanguages {
-    /// All supported language codes and display names.
-    static let all: [(code: String, name: String)] = [
-        ("en", "English"),
-        ("zh-Hans", "简体中文"),
-        ("zh-Hant", "繁體中文"),
-        ("ja", "日本語"),
-        ("ko", "한국어"),
-        ("fr", "Français"),
-        ("de", "Deutsch"),
-        ("es", "Español"),
-        ("pt-BR", "Português (Brasil)"),
-        ("ru", "Русский"),
-        ("ar", "العربية"),
-        ("it", "Italiano"),
-        ("th", "ไทย"),
-        ("vi", "Tiếng Việt"),
+    /// Ordered list of supported language codes.
+    static let codes: [String] = [
+        "en", "zh-Hans", "zh-Hant", "ja", "ko",
+        "fr", "de", "es", "pt-BR", "ru", "ar", "it", "th", "vi",
     ]
 
+    /// All supported language codes and their localized display names.
+    static var all: [(code: String, name: String)] {
+        codes.map { code in
+            (code: code, name: Locale.current.localizedString(forIdentifier: code) ?? code)
+        }
+    }
+
     /// Set of all supported language codes.
-    static let codes: Set<String> = Set(all.map(\.code))
+    static let codeSet: Set<String> = Set(codes)
 }
 
 // MARK: - Settings Tab

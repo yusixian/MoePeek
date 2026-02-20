@@ -89,11 +89,11 @@ struct ProviderResultCard: View {
     private var bodyContent: some View {
         switch state {
         case .waiting:
-            Text("Waiting...")
+            Text("Waiting…")
                 .font(.callout)
                 .foregroundStyle(.tertiary)
         case .translating:
-            Text("Translating...")
+            Text("Translating…")
                 .font(.callout)
                 .foregroundStyle(.secondary)
         case let .streaming(partial):

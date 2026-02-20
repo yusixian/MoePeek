@@ -67,7 +67,7 @@ struct OnboardingView: View {
             // Navigation buttons
             HStack {
                 if currentPageIndex > 0 {
-                    Button("上一步") {
+                    Button("Previous") {
                         withAnimation(.easeInOut(duration: 0.3)) {
                             currentPageIndex -= 1
                         }
@@ -97,38 +97,38 @@ struct OnboardingView: View {
                     currentPageIndex = 1
                 }
             } label: {
-                Text("开始设置")
+                Text("Begin Setup")
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
 
         case .accessibility:
             nextStepButton(
-                title: "下一步",
+                title: "Next",
                 isHighlighted: permissionManager.isAccessibilityGranted,
                 action: goNext
             )
 
         case .screenRecording:
             nextStepButton(
-                title: "下一步",
+                title: "Next",
                 isHighlighted: permissionManager.isScreenRecordingGranted,
                 action: goNext
             )
 
         case .providerSelection:
             nextStepButton(
-                title: "下一步",
+                title: "Next",
                 isHighlighted: !enabledProviders.isEmpty,
                 action: goNext
             )
 
         case .openaiSetup:
             HStack(spacing: 12) {
-                Button("跳过") { goNext() }
+                Button("Skip") { goNext() }
                     .controlSize(.large)
                 nextStepButton(
-                    title: isLast ? "开始使用" : "下一步",
+                    title: isLast ? "Get Started" : "Next",
                     isHighlighted: !apiKey.isEmpty,
                     action: goNext
                 )
@@ -136,10 +136,10 @@ struct OnboardingView: View {
 
         case .appleTranslation:
             HStack(spacing: 12) {
-                Button("跳过") { goNext() }
+                Button("Skip") { goNext() }
                     .controlSize(.large)
                 nextStepButton(
-                    title: "开始使用",
+                    title: "Get Started",
                     isHighlighted: true,
                     action: goNext
                 )
@@ -172,11 +172,11 @@ struct OnboardingView: View {
             Text("MoePeek")
                 .font(.title.bold())
 
-            Text("菜单栏翻译工具")
+            Text("Menu Bar Translation Tool")
                 .font(.headline)
                 .foregroundStyle(.secondary)
 
-            Text("需要以下权限才能正常工作，\n接下来将引导你逐步完成设置。")
+            Text("The following permissions are required.\nWe'll guide you through the setup.")
                 .font(.subheadline)
                 .foregroundStyle(.tertiary)
                 .multilineTextAlignment(.center)
@@ -189,8 +189,8 @@ struct OnboardingView: View {
     private var accessibilityStep: some View {
         permissionStep(
             icon: "hand.raised",
-            title: "辅助功能权限",
-            description: "MoePeek 需要辅助功能权限来读取你选中的文本，这是划词翻译的核心功能。",
+            title: "Accessibility Permission",
+            description: "MoePeek needs accessibility permission to read your selected text. This is essential for text selection translation.",
             isGranted: permissionManager.isAccessibilityGranted,
             onOpenSettings: { permissionManager.openAccessibilitySettings() }
         )
@@ -199,8 +199,8 @@ struct OnboardingView: View {
     private var screenRecordingStep: some View {
         permissionStep(
             icon: "rectangle.dashed.badge.record",
-            title: "屏幕录制权限",
-            description: "MoePeek 需要屏幕录制权限来进行 OCR 截图翻译，识别屏幕上的文字。",
+            title: "Screen Recording Permission",
+            description: "MoePeek needs screen recording permission for OCR screenshot translation to recognize text on screen.",
             isGranted: permissionManager.isScreenRecordingGranted,
             onOpenSettings: { permissionManager.openScreenRecordingSettings() }
         )
@@ -216,10 +216,10 @@ struct OnboardingView: View {
                 .font(.system(size: 40))
                 .foregroundStyle(.blue)
 
-            Text("选择翻译服务")
+            Text("Select Translation Service")
                 .font(.title2.bold())
 
-            Text("至少启用一个翻译服务才能使用翻译功能。\n你可以同时启用多个服务进行对比。")
+            Text("Enable at least one translation service.\nYou can enable multiple services for comparison.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -233,7 +233,7 @@ struct OnboardingView: View {
             .padding(.horizontal, 24)
 
             if enabledProviders.isEmpty {
-                Text("请至少选择一个翻译服务")
+                Text("Please select at least one translation service")
                     .font(.caption)
                     .foregroundStyle(.red)
             }
@@ -289,8 +289,8 @@ struct OnboardingView: View {
 
     private func providerDescription(for id: String) -> String {
         switch id {
-        case "openai": "OpenAI 兼容 API，需要配置 API Key"
-        case "apple": "系统内置翻译，无需 API Key（macOS 15+）"
+        case "openai": String(localized: "OpenAI-compatible API, requires API Key")
+        case "apple": String(localized: "Built-in system translation, no API Key needed (macOS 15+)")
         default: ""
         }
     }
@@ -305,10 +305,10 @@ struct OnboardingView: View {
                 .font(.system(size: 40))
                 .foregroundStyle(.orange)
 
-            Text("配置 OpenAI API")
+            Text("Configure OpenAI API")
                 .font(.title2.bold())
 
-            Text("输入你的 API Key 以使用 OpenAI 翻译服务。\n你也可以稍后在设置中配置。")
+            Text("Enter your API Key to use the OpenAI translation service.\nYou can also configure this later in Settings.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -363,10 +363,10 @@ struct OnboardingView: View {
                 .font(.system(size: 40))
                 .foregroundStyle(.blue)
 
-            Text("Apple Translation 语言包")
+            Text("Apple Translation Language Packs")
                 .font(.title2.bold())
 
-            Text("Apple Translation 需要下载语言包才能离线翻译。\n选择常用语言对并下载，或稍后在设置中下载。")
+            Text("Apple Translation requires language packs for offline translation.\nSelect a language pair and download, or do it later in Settings.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -384,7 +384,7 @@ struct OnboardingView: View {
 
     @ViewBuilder
     private func nextStepButton(
-        title: String,
+        title: LocalizedStringKey,
         isHighlighted: Bool,
         action: @escaping () -> Void
     ) -> some View {
@@ -403,8 +403,8 @@ struct OnboardingView: View {
 
     private func permissionStep(
         icon: String,
-        title: String,
-        description: String,
+        title: LocalizedStringKey,
+        description: LocalizedStringKey,
         isGranted: Bool,
         onOpenSettings: @escaping () -> Void
     ) -> some View {
@@ -425,18 +425,18 @@ struct OnboardingView: View {
                 .padding(.horizontal, 24)
 
             if isGranted {
-                Label("已授权", systemImage: "checkmark.circle.fill")
+                Label("Granted", systemImage: "checkmark.circle.fill")
                     .font(.headline)
                     .foregroundStyle(.green)
                     .transition(.scale.combined(with: .opacity))
             } else {
-                Button("打开系统设置") {
+                Button("Open System Settings") {
                     onOpenSettings()
                 }
                 .controlSize(.large)
             }
 
-            Text("授权后状态会自动更新")
+            Text("Status updates automatically after granting")
                 .font(.caption)
                 .foregroundStyle(.tertiary)
 
@@ -456,11 +456,11 @@ private struct OnboardingLanguageDownloadView: View {
 
         var label: String {
             switch self {
-            case .checking: "检查中…"
-            case .installed: "已安装"
-            case .needsDownload: "需要下载"
-            case .unsupported: "不支持"
-            case .unknown: "未知"
+            case .checking: String(localized: "Checking…")
+            case .installed: String(localized: "Installed")
+            case .needsDownload: String(localized: "Needs download")
+            case .unsupported: String(localized: "Unsupported")
+            case .unknown: String(localized: "Unknown")
             }
         }
 
@@ -479,7 +479,7 @@ private struct OnboardingLanguageDownloadView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 8) {
-                Picker("源语言", selection: $selectedSource) {
+                Picker("Source Language", selection: $selectedSource) {
                     ForEach(SupportedLanguages.all, id: \.code) { code, name in
                         Text(name).tag(code)
                     }
@@ -489,7 +489,7 @@ private struct OnboardingLanguageDownloadView: View {
                 Image(systemName: "arrow.right")
                     .foregroundStyle(.secondary)
 
-                Picker("目标语言", selection: $selectedTarget) {
+                Picker("Target Language", selection: $selectedTarget) {
                     ForEach(SupportedLanguages.all, id: \.code) { code, name in
                         Text(name).tag(code)
                     }
@@ -498,7 +498,7 @@ private struct OnboardingLanguageDownloadView: View {
             }
 
             HStack(spacing: 8) {
-                Button("检查并下载") {
+                Button("Check & Download") {
                     downloadConfiguration = .init(
                         source: Locale.Language(identifier: selectedSource),
                         target: Locale.Language(identifier: selectedTarget)
