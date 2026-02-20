@@ -78,7 +78,7 @@ jobs:
 
       - name: Create ZIP
         run: |
-          ditto -c -k --sequesterRsrc build/app/MoePeek.app \
+          ditto -c -k --sequesterRsrc --keepParent build/app/MoePeek.app \
             "MoePeek-v${{ steps.version.outputs.version }}-macOS.zip"
 
       - name: Check Sparkle signing key
