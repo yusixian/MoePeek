@@ -13,8 +13,7 @@ struct SourceInputView: View {
                 .font(.callout)
                 .scrollContentBackground(.hidden)
                 .focused($isFocused)
-                .frame(minHeight: 36, maxHeight: 80)
-                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxHeight: .infinity)
                 .onKeyPress(phases: .down) { press in
                     guard press.key == .return else { return .ignored }
                     if press.modifiers.contains(.shift) {

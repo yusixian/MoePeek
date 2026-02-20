@@ -27,6 +27,7 @@ struct SettingsView: View {
                 }
                 .tag(SettingsTab.about)
         }
-        .frame(width: 600, height: 480)
+        .frame(minWidth: 550, idealWidth: 600, maxWidth: 800,
+               minHeight: 400, idealHeight: 480, maxHeight: 700)
     }
 }

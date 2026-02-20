@@ -9,6 +9,15 @@ struct PopupView: View {
     @State private var editableText: String = ""
     @State private var expandedProviders: Set<String> = []
     @State private var targetLang: String = Defaults[.targetLanguage]
+    @State private var inputHeight: CGFloat = CGFloat(Defaults[.popupInputHeight])
+    @State private var containerHeight: CGFloat = CGFloat(Defaults[.popupDefaultHeight])
+
+    private let inputMinHeight: CGFloat = 36
+
+    private var maxInputHeight: CGFloat {
+        // Reserve 120pt for language bar + results; floor ensures drag range above inputMinHeight
+        max(containerHeight - 120, inputMinHeight + 24)
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -30,6 +39,18 @@ struct PopupView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(
+            GeometryReader { geo in
+                Color.clear
+                    .onAppear { containerHeight = geo.size.height }
+                    .onChange(of: geo.size.height) { _, h in containerHeight = h }
+            }
+        )
+        .onChange(of: containerHeight) { _, _ in
+            let clamped = min(inputHeight, maxInputHeight)
+            guard clamped != inputHeight else { return }
+            inputHeight = clamped
+        }
         .overlay(alignment: .bottomTrailing) {
             ResizeGripView()
         }
@@ -68,12 +89,17 @@ struct PopupView: View {
                         coordinator.translate(editableText)
                     }
                 )
+                .frame(height: inputHeight)
                 .padding(.horizontal, 14)
                 .padding(.top, 10)
                 .padding(.bottom, 4)
 
-                Divider()
-                    .padding(.horizontal, 10)
+                DraggableDividerView(
+                    inputHeight: $inputHeight,
+                    minHeight: inputMinHeight,
+                    maxHeight: maxInputHeight,
+                    onDragEnd: { Defaults[.popupInputHeight] = Int(inputHeight) }
+                )
 
                 // Language bar + settings button
                 HStack(spacing: 4) {
@@ -227,5 +253,54 @@ private struct ResizeGripView: View {
                 NSCursor.arrow.set()
             }
         }
+    }
+}
+
+// MARK: - Draggable Divider
+
+/// A horizontal divider between the source input and translation results that can be
+/// dragged vertically to resize the input area.
+private struct DraggableDividerView: View {
+    @Binding var inputHeight: CGFloat
+    let minHeight: CGFloat
+    let maxHeight: CGFloat
+    let onDragEnd: () -> Void
+
+    @State private var dragStartHeight: CGFloat?
+    @State private var isHovering = false
+
+    var body: some View {
+        Divider()
+            .padding(.horizontal, 10)
+            .frame(height: 5)
+            .contentShape(Rectangle())
+            .gesture(
+                DragGesture(minimumDistance: 1)
+                    .onChanged { value in
+                        if dragStartHeight == nil {
+                            dragStartHeight = inputHeight
+                        }
+                        guard let start = dragStartHeight else { return }
+                        let newHeight = start + value.translation.height
+                        inputHeight = min(max(newHeight, minHeight), maxHeight)
+                    }
+                    .onEnded { _ in
+                        dragStartHeight = nil
+                        onDragEnd()
+                    }
+            )
+            .onHover { hovering in
+                isHovering = hovering
+                if hovering {
+                    NSCursor.resizeUpDown.push()
+                } else {
+                    NSCursor.pop()
+                }
+            }
+            .onDisappear {
+                if isHovering {
+                    NSCursor.pop()
+                }
+            }
     }
 }
