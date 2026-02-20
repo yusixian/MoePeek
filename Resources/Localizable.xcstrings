@@ -1116,6 +1116,26 @@
         }
       }
     },
+    "Translate to:" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "翻译为："
+          }
+        }
+      }
+    },
+    "Translation" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "翻译"
+          }
+        }
+      }
+    },
     "Test Connection" : {
       "extractionState" : "stale",
       "localizations" : {

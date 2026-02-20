@@ -42,14 +42,6 @@ struct GeneralSettingsView: View {
                     showRestartAlert = true
                 }
 
-                Picker("Target Language:", selection: $targetLanguage) {
-                    ForEach(SupportedLanguages.all, id: \.code) { code, name in
-                        Text(name).tag(code)
-                    }
-                }
-
-                Toggle("Auto-translate selected text", isOn: $isAutoDetectEnabled)
-
                 Toggle("Launch at Login", isOn: $launchAtLogin)
                     .onChange(of: launchAtLogin) { _, newValue in
                         do {
@@ -70,6 +62,16 @@ struct GeneralSettingsView: View {
                             NSApp.activate(ignoringOtherApps: true)
                         }
                     }
+            }
+
+            Section("Translation") {
+                Picker("Translate to:", selection: $targetLanguage) {
+                    ForEach(SupportedLanguages.all, id: \.code) { code, name in
+                        Text(name).tag(code)
+                    }
+                }
+
+                Toggle("Auto-translate selected text", isOn: $isAutoDetectEnabled)
             }
 
             Section("Language Detection") {
