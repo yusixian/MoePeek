@@ -47,9 +47,11 @@ enum TranslationError: LocalizedError {
         case let .apiError(code, msg): String(localized: "API error (\(code)): \(msg)")
         case .emptyResult: String(localized: "Translation returned empty result")
         case let .languageNotInstalled(src, tgt):
-            String(localized: "Language pack not downloaded (\(src ?? String(localized: "auto")) → \(tgt)). Download it in Settings or try another provider.")
+            let source = src ?? String(localized: "auto")
+            return String(localized: "Language pack not downloaded (\(source) → \(tgt)). Download it in Settings or try another provider.")
         case let .languageUnsupported(src, tgt):
-            String(localized: "Language pair not supported (\(src ?? String(localized: "auto")) → \(tgt)). Try another provider.")
+            let source = src ?? String(localized: "auto")
+            return String(localized: "Language pair not supported (\(source) → \(tgt)). Try another provider.")
         case .translationSessionFailed:
             String(localized: "Translation session ended unexpectedly. Please try again.")
         }

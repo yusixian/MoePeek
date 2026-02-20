@@ -763,6 +763,20 @@
           "stringUnit": { "state": "translated", "value": "连接成功 (%lldms)" }
         }
       }
+    },
+    "API Configuration": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "API 配置" }
+        }
+      }
+    },
+    "System Prompt": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": { "state": "translated", "value": "系统提示词" }
+        }
+      }
     }
   },
   "version": "1.0"

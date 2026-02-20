@@ -232,7 +232,7 @@ final class TranslationCoordinator {
             guard !Task.isCancelled else { return }
 
             if accumulated.isEmpty {
-                providerStates[provider.id] = .error(message: "Empty result")
+                providerStates[provider.id] = .error(message: String(localized: "Translation returned empty result"))
             } else {
                 providerStates[provider.id] = .completed(text: accumulated)
             }
