@@ -14,7 +14,7 @@ struct OpenAICompatibleProvider: TranslationProvider {
     let baseURLKey: Defaults.Key<String>
     let modelKey: Defaults.Key<String>
     let systemPromptKey: Defaults.Key<String>
-    let keychainKey: String
+    let apiKeyKey: Defaults.Key<String>
 
     init(
         id: String,
@@ -32,15 +32,12 @@ struct OpenAICompatibleProvider: TranslationProvider {
             "provider_\(id)_systemPrompt",
             default: "Translate the following text to {targetLang}. Only output the translation, nothing else."
         )
-        self.keychainKey = "provider.\(id).apiKey"
+        self.apiKeyKey = .init("provider_\(id)_apiKey", default: "")
     }
 
     @MainActor
     var isConfigured: Bool {
-        guard let apiKey = KeychainHelper.load(key: keychainKey), !apiKey.isEmpty else {
-            return false
-        }
-        return true
+        !Defaults[apiKeyKey].isEmpty
     }
 
     func translateStream(
@@ -101,7 +98,8 @@ struct OpenAICompatibleProvider: TranslationProvider {
         guard let url = URL(string: "\(baseURL)/chat/completions") else {
             throw TranslationError.invalidURL
         }
-        guard let apiKey = KeychainHelper.load(key: keychainKey), !apiKey.isEmpty else {
+        let apiKey = Defaults[apiKeyKey]
+        guard !apiKey.isEmpty else {
             throw TranslationError.missingAPIKey
         }
 

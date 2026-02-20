@@ -63,6 +63,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - Migration
 
     private func migrateDefaults() {
+        migrateV1ProviderSettings()
+        migrateV2KeychainToDefaults()
+    }
+
+    /// V1: Migrate old flat keys to namespaced provider keys.
+    private func migrateV1ProviderSettings() {
         let migrationKey = "hasCompletedProviderMigration"
         guard !UserDefaults.standard.bool(forKey: migrationKey) else { return }
 
@@ -80,6 +86,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             "provider_openai_systemPrompt",
             default: "Translate the following text to {targetLang}. Only output the translation, nothing else."
         )
+        let newApiKey = Defaults.Key<String>("provider_openai_apiKey", default: "")
 
         // Only migrate if old keys have non-default values
         if UserDefaults.standard.object(forKey: "openAIBaseURL") != nil {
@@ -92,9 +99,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             Defaults[newPrompt] = Defaults[oldPrompt]
         }
 
-        // Migrate Keychain API key
+        // Migrate Keychain API key directly to Defaults
         if let oldApiKey = KeychainHelper.load(key: "openai_api_key"), !oldApiKey.isEmpty {
-            KeychainHelper.save(key: "provider.openai.apiKey", value: oldApiKey)
+            Defaults[newApiKey] = oldApiKey
         }
 
         // Migrate preferredService to enabledProviders
@@ -113,6 +120,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             UserDefaults.standard.removeObject(forKey: oldKey)
         }
         KeychainHelper.delete(key: "openai_api_key")
+
+        UserDefaults.standard.set(true, forKey: migrationKey)
+    }
+
+    /// V2: Migrate API keys from Keychain to Defaults for users who already completed V1 migration.
+    private func migrateV2KeychainToDefaults() {
+        let migrationKey = "hasCompletedKeychainToDefaultsMigration"
+        guard !UserDefaults.standard.bool(forKey: migrationKey) else { return }
+
+        let keychainKey = "provider.openai.apiKey"
+        let defaultsKey = Defaults.Key<String>("provider_openai_apiKey", default: "")
+
+        if let apiKey = KeychainHelper.load(key: keychainKey), !apiKey.isEmpty {
+            Defaults[defaultsKey] = apiKey
+            KeychainHelper.delete(key: keychainKey)
+        }
 
         UserDefaults.standard.set(true, forKey: migrationKey)
     }

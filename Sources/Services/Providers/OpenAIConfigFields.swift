@@ -2,7 +2,7 @@ import Defaults
 import SwiftUI
 
 /// Reusable OpenAI-compatible API configuration fields with model fetching and connection testing.
-/// Loads from provider on appear; saves to Defaults/Keychain on submit and disappear — not on every keystroke.
+/// Loads from provider on appear; saves to Defaults on submit and disappear — not on every keystroke.
 struct OpenAIConfigFields: View {
     let provider: OpenAICompatibleProvider
     /// Exposed so parents can observe the current API key state (e.g. to highlight a button).
@@ -67,11 +67,7 @@ struct OpenAIConfigFields: View {
     }
 
     private func save() {
-        if apiKey.isEmpty {
-            KeychainHelper.delete(key: provider.keychainKey)
-        } else {
-            KeychainHelper.save(key: provider.keychainKey, value: apiKey)
-        }
+        Defaults[provider.apiKeyKey] = apiKey
         Defaults[provider.baseURLKey] = baseURL
         Defaults[provider.modelKey] = model
     }
@@ -79,6 +75,6 @@ struct OpenAIConfigFields: View {
     private func load() {
         baseURL = Defaults[provider.baseURLKey]
         model = Defaults[provider.modelKey]
-        apiKey = KeychainHelper.load(key: provider.keychainKey) ?? ""
+        apiKey = Defaults[provider.apiKeyKey]
     }
 }
