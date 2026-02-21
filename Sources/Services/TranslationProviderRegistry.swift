@@ -38,6 +38,7 @@ final class TranslationProviderRegistry {
             // Free Translation
             GoogleTranslateProvider(),
             BingTranslateProvider(),
+            YoudaoTranslateProvider(),
 
             // Translation APIs
             DeepLProvider(),
