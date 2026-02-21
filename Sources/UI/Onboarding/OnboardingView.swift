@@ -13,7 +13,6 @@ struct OnboardingView: View {
 
     @Default(.enabledProviders) private var enabledProviders
     @State private var currentPageIndex = 0
-    @State private var apiKey: String = ""
 
     private var openaiProvider: OpenAICompatibleProvider? {
         registry.providers.first { $0.id == "openai" } as? OpenAICompatibleProvider
@@ -133,7 +132,7 @@ struct OnboardingView: View {
                     .controlSize(.large)
                 nextStepButton(
                     title: isLast ? "Get Started" : "Next",
-                    isHighlighted: !apiKey.isEmpty,
+                    isHighlighted: openaiProvider.map { !Defaults[$0.apiKeyKey].isEmpty } ?? false,
                     action: goNext
                 )
             }
@@ -212,6 +211,15 @@ struct OnboardingView: View {
 
     // MARK: - Provider Selection Step
 
+    /// Core providers shown during onboarding (subset of all available providers).
+    private static let onboardingProviderIDs = ["openai", "google", "apple"]
+
+    private var onboardingProviders: [any TranslationProvider] {
+        Self.onboardingProviderIDs.compactMap { id in
+            registry.providers.first { $0.id == id }
+        }
+    }
+
     private var providerSelectionStep: some View {
         VStack(spacing: 16) {
             Spacer()
@@ -230,7 +238,7 @@ struct OnboardingView: View {
                 .padding(.horizontal, 24)
 
             VStack(spacing: 10) {
-                ForEach(registry.providers, id: \.id) { provider in
+                ForEach(onboardingProviders, id: \.id) { provider in
                     providerToggleRow(provider)
                 }
             }
@@ -241,6 +249,10 @@ struct OnboardingView: View {
                     .font(.caption)
                     .foregroundStyle(.red)
             }
+
+            Text("More translation services available in Settings")
+                .font(.caption)
+                .foregroundStyle(.tertiary)
 
             Spacer()
         }
@@ -294,6 +306,7 @@ struct OnboardingView: View {
     private func providerDescription(for id: String) -> String {
         switch id {
         case "openai": String(localized: "OpenAI-compatible API, requires API Key")
+        case "google": String(localized: "Free, no API key needed.")
         case "apple": String(localized: "Built-in system translation, no API Key needed (macOS 15+)")
         default: ""
         }
@@ -319,7 +332,7 @@ struct OnboardingView: View {
                 .padding(.horizontal, 24)
 
             if let provider = openaiProvider {
-                OpenAIConfigFields(provider: provider, apiKey: $apiKey)
+                OpenAIConfigFields(provider: provider)
                     .padding(.horizontal, 32)
             }
 

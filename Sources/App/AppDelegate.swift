@@ -70,6 +70,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func migrateDefaults() {
         migrateV1ProviderSettings()
         migrateV2KeychainToDefaults()
+        migrateV3RemovedProviders()
     }
 
     /// V1: Migrate old flat keys to namespaced provider keys.
@@ -143,6 +144,28 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         UserDefaults.standard.set(true, forKey: migrationKey)
+    }
+
+    /// V3: Remove provider IDs that no longer exist; fall back to default if none remain.
+    private func migrateV3RemovedProviders() {
+        let removedIDs: Set<String> = ["groq", "github-models"]
+        var enabled = Defaults[.enabledProviders]
+        let needsMigration = !enabled.isDisjoint(with: removedIDs)
+        if needsMigration {
+            enabled.subtract(removedIDs)
+            if enabled.isEmpty {
+                enabled = ["google"]
+            }
+            Defaults[.enabledProviders] = enabled
+        }
+
+        // Clean up orphaned Defaults keys for removed providers
+        let suffixes = ["baseURL", "model", "systemPrompt", "apiKey"]
+        for id in removedIDs {
+            for suffix in suffixes {
+                UserDefaults.standard.removeObject(forKey: "provider_\(id)_\(suffix)")
+            }
+        }
     }
 
     // MARK: - Shortcuts

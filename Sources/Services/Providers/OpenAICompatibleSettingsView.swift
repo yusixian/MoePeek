@@ -5,12 +5,10 @@ import SwiftUI
 struct OpenAICompatibleSettingsView: View {
     let provider: OpenAICompatibleProvider
 
-    @State private var apiKey = ""
-
     var body: some View {
         Form {
             Section("API Configuration") {
-                OpenAIConfigFields(provider: provider, apiKey: $apiKey)
+                OpenAIConfigFields(provider: provider)
             }
 
             Section("System Prompt") {
@@ -21,6 +19,15 @@ struct OpenAICompatibleSettingsView: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
+
+            if let urlString = provider.guideURL, let url = URL(string: urlString) {
+                Section {
+                    Link(destination: url) {
+                        Label("Get API Key from \(provider.displayName)", systemImage: "arrow.up.right.square")
+                    }
+                    .font(.caption)
+                }
+            }
         }
         .formStyle(.grouped)
     }
@@ -28,7 +35,7 @@ struct OpenAICompatibleSettingsView: View {
 
 // MARK: - Defaults Binding Helper
 
-private extension Defaults {
+extension Defaults {
     static func binding(_ key: Defaults.Key<String>) -> Binding<String> {
         Binding(
             get: { Defaults[key] },

@@ -1,4 +1,20 @@
+import Foundation
 import SwiftUI
+
+// MARK: - Provider Category
+
+enum ProviderCategory: String, CaseIterable {
+    case freeTranslation, traditional, llm, system
+
+    var displayName: String {
+        switch self {
+        case .freeTranslation: String(localized: "Free Translation")
+        case .llm: String(localized: "LLM Services")
+        case .traditional: String(localized: "Translation APIs")
+        case .system: String(localized: "System")
+        }
+    }
+}
 
 /// Plugin protocol for translation backends. Each provider is self-contained:
 /// owns its translation logic, settings UI, and configuration storage.
@@ -9,6 +25,8 @@ protocol TranslationProvider: Sendable {
     var displayName: String { get }
     /// SF Symbol icon name.
     var iconSystemName: String { get }
+    /// Provider category for UI grouping.
+    var category: ProviderCategory { get }
     /// Whether this provider supports streaming output.
     var supportsStreaming: Bool { get }
     /// Whether this provider is available on the current system.
@@ -25,6 +43,89 @@ protocol TranslationProvider: Sendable {
 
     /// Return a settings view for this provider.
     @MainActor func makeSettingsView() -> AnyView
+}
+
+// MARK: - Default Implementation
+
+extension TranslationProvider {
+    var category: ProviderCategory { .llm }
+}
+
+// MARK: - Non-Streaming Helper
+
+extension TranslationProvider {
+    /// Wrap a single-result async translation as a one-shot `AsyncThrowingStream`.
+    /// Used by non-streaming providers to avoid duplicating the stream boilerplate.
+    func singleResultStream(
+        _ operation: @escaping @Sendable () async throws -> String
+    ) -> AsyncThrowingStream<String, Error> {
+        AsyncThrowingStream { continuation in
+            let task = Task {
+                do {
+                    let result = try await operation()
+                    continuation.yield(result)
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+            continuation.onTermination = { _ in task.cancel() }
+        }
+    }
+}
+
+// MARK: - OpenAI-Compatible SSE Streaming Helper
+
+extension TranslationProvider {
+    /// Stream an OpenAI-compatible SSE response, validating the HTTP status
+    /// and yielding content deltas to the continuation.
+    func streamOpenAISSE(
+        _ bytes: URLSession.AsyncBytes,
+        response: URLResponse,
+        to continuation: AsyncThrowingStream<String, Error>.Continuation
+    ) async throws {
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw TranslationError.invalidResponse
+        }
+        guard httpResponse.statusCode == 200 else {
+            var errorBody = ""
+            for try await line in bytes.lines {
+                errorBody += line
+            }
+            throw TranslationError.apiError(statusCode: httpResponse.statusCode, message: errorBody)
+        }
+
+        for try await line in bytes.lines {
+            guard !Task.isCancelled else { break }
+
+            guard line.hasPrefix("data: ") else { continue }
+            let payload = String(line.dropFirst(6))
+
+            if payload == "[DONE]" { break }
+
+            guard let data = payload.data(using: .utf8),
+                  let json = try? JSONDecoder().decode(OpenAISSEChunk.self, from: data),
+                  let content = json.choices.first?.delta.content
+            else { continue }
+
+            continuation.yield(content)
+        }
+    }
+}
+
+// MARK: - Shared SSE Models
+
+/// OpenAI-compatible SSE chunk format used by streaming providers (OpenAI, Ollama, etc.).
+struct OpenAISSEChunk: Decodable, Sendable {
+    let choices: [Choice]
+
+    struct Choice: Decodable, Sendable {
+        let delta: Delta
+    }
+
+    struct Delta: Decodable, Sendable {
+        let content: String?
+    }
 }
 
 // MARK: - Translation Errors

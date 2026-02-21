@@ -85,9 +85,9 @@ The app requires **Accessibility** (for AX text grabbing) and **Screen Recording
 
 ### Adding a New Translation Service
 
-1. Implement `TranslationService` protocol (with `translateStream` returning `AsyncThrowingStream`)
-2. Add selection option in `TranslationCoordinator.resolveService()`
-3. Add UI controls in `ServiceSettingsView`
+1. Implement `TranslationProvider` protocol (with `translateStream` returning `AsyncThrowingStream`)
+2. Register in `TranslationProviderRegistry.builtIn()` (for OpenAI-compatible, just add a new `OpenAICompatibleProvider` instance)
+3. Settings UI is auto-generated from `provider.makeSettingsView()`; provider is self-contained
 
 ## Versioning & Release
 
