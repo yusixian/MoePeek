@@ -5,12 +5,10 @@ import SwiftUI
 struct OpenAICompatibleSettingsView: View {
     let provider: OpenAICompatibleProvider
 
-    @State private var apiKey = ""
-
     var body: some View {
         Form {
             Section("API Configuration") {
-                OpenAIConfigFields(provider: provider, apiKey: $apiKey)
+                OpenAIConfigFields(provider: provider)
             }
 
             Section("System Prompt") {
@@ -28,7 +26,7 @@ struct OpenAICompatibleSettingsView: View {
 
 // MARK: - Defaults Binding Helper
 
-private extension Defaults {
+extension Defaults {
     static func binding(_ key: Defaults.Key<String>) -> Binding<String> {
         Binding(
             get: { Defaults[key] },

@@ -37,24 +37,28 @@ struct ServiceSettingsView: View {
                 .padding(.bottom, 8)
 
             List(selection: $selectedProviderID) {
-                ForEach(registry.providers, id: \.id) { provider in
-                    HStack(spacing: 8) {
-                        Toggle("", isOn: providerEnabledBinding(for: provider.id))
-                            .toggleStyle(.switch)
-                            .controlSize(.mini)
-                            .labelsHidden()
+                ForEach(registry.groupedProviders, id: \.category) { group in
+                    Section(group.category.displayName) {
+                        ForEach(group.providers, id: \.id) { provider in
+                            HStack(spacing: 8) {
+                                Toggle("", isOn: providerEnabledBinding(for: provider.id))
+                                    .toggleStyle(.switch)
+                                    .controlSize(.mini)
+                                    .labelsHidden()
 
-                        Image(systemName: provider.iconSystemName)
-                            .font(.callout)
-                            .frame(width: 16)
+                                Image(systemName: provider.iconSystemName)
+                                    .font(.callout)
+                                    .frame(width: 16)
 
-                        Text(provider.displayName)
-                            .font(.callout)
+                                Text(provider.displayName)
+                                    .font(.callout)
 
-                        Spacer()
+                                Spacer()
+                            }
+                            .tag(provider.id)
+                            .contentShape(Rectangle())
+                        }
                     }
-                    .tag(provider.id)
-                    .contentShape(Rectangle())
                 }
             }
             .listStyle(.sidebar)
@@ -70,6 +74,7 @@ struct ServiceSettingsView: View {
         {
             ScrollView {
                 provider.makeSettingsView()
+                    .id(id)
             }
         } else {
             ContentUnavailableView(

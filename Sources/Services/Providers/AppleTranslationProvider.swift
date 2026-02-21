@@ -10,6 +10,7 @@ struct AppleTranslationProvider: TranslationProvider {
     let id = "apple"
     let displayName = "Apple Translation"
     let iconSystemName = "apple.logo"
+    let category: ProviderCategory = .system
     let supportsStreaming = false
     let isAvailable = true
 

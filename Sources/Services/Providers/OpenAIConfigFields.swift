@@ -2,47 +2,44 @@ import Defaults
 import SwiftUI
 
 /// Reusable OpenAI-compatible API configuration fields with model fetching and connection testing.
-/// Loads from provider on appear; saves to Defaults on submit and disappear — not on every keystroke.
+/// Binds directly to Defaults keys so values update immediately when switching providers.
 struct OpenAIConfigFields: View {
     let provider: OpenAICompatibleProvider
-    /// Exposed so parents can observe the current API key state (e.g. to highlight a button).
-    @Binding var apiKey: String
 
     @State private var connectionManager = OpenAIConnectionManager()
-    @State private var baseURL = ""
-    @State private var model = ""
+
+    private var baseURL: Binding<String> { Defaults.binding(provider.baseURLKey) }
+    private var apiKey: Binding<String> { Defaults.binding(provider.apiKeyKey) }
+    private var model: Binding<String> { Defaults.binding(provider.modelKey) }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Base URL")
                     .font(.subheadline.bold())
-                TextField("https://api.openai.com/v1", text: $baseURL)
+                TextField(provider.baseURLKey.defaultValue, text: baseURL)
                     .textFieldStyle(.roundedBorder)
-                    .onSubmit { save() }
             }
 
             VStack(alignment: .leading, spacing: 4) {
                 Text("API Key")
                     .font(.subheadline.bold())
-                SecureField("sk-...", text: $apiKey)
+                SecureField("sk-...", text: apiKey)
                     .textFieldStyle(.roundedBorder)
-                    .onSubmit { save() }
             }
 
             VStack(alignment: .leading, spacing: 4) {
                 Text("Model")
                     .font(.subheadline.bold())
                 HStack(spacing: 4) {
-                    TextField("gpt-4o-mini", text: $model)
+                    TextField(provider.modelKey.defaultValue, text: model)
                         .textFieldStyle(.roundedBorder)
-                        .onSubmit { save() }
 
                     ModelFetchAccessory(
                         connectionManager: connectionManager,
-                        model: $model,
-                        baseURL: baseURL,
-                        apiKey: apiKey
+                        model: model,
+                        baseURL: baseURL.wrappedValue,
+                        apiKey: apiKey.wrappedValue
                     )
                 }
             }
@@ -55,26 +52,12 @@ struct OpenAIConfigFields: View {
 
             ConnectionTestView(
                 connectionManager: connectionManager,
-                baseURL: baseURL,
-                apiKey: apiKey,
-                model: model
+                baseURL: baseURL.wrappedValue,
+                apiKey: apiKey.wrappedValue,
+                model: model.wrappedValue
             )
         }
-        .onAppear { load() }
-        .onDisappear { save() }
-        .onChange(of: baseURL) { _, _ in connectionManager.clearModels() }
-        .onChange(of: apiKey) { _, _ in connectionManager.clearModels() }
-    }
-
-    private func save() {
-        Defaults[provider.apiKeyKey] = apiKey
-        Defaults[provider.baseURLKey] = baseURL
-        Defaults[provider.modelKey] = model
-    }
-
-    private func load() {
-        baseURL = Defaults[provider.baseURLKey]
-        model = Defaults[provider.modelKey]
-        apiKey = Defaults[provider.apiKeyKey]
+        .onChange(of: baseURL.wrappedValue) { _, _ in connectionManager.clearModels() }
+        .onChange(of: apiKey.wrappedValue) { _, _ in connectionManager.clearModels() }
     }
 }

@@ -50,33 +50,7 @@ struct OpenAICompatibleProvider: TranslationProvider {
                 do {
                     let request = try buildRequest(text: text, sourceLang: sourceLang, targetLang: targetLang)
                     let (bytes, response) = try await URLSession.shared.bytes(for: request)
-
-                    guard let httpResponse = response as? HTTPURLResponse else {
-                        throw TranslationError.invalidResponse
-                    }
-                    guard httpResponse.statusCode == 200 else {
-                        var errorBody = ""
-                        for try await line in bytes.lines {
-                            errorBody += line
-                        }
-                        throw TranslationError.apiError(statusCode: httpResponse.statusCode, message: errorBody)
-                    }
-
-                    for try await line in bytes.lines {
-                        guard !Task.isCancelled else { break }
-
-                        guard line.hasPrefix("data: ") else { continue }
-                        let payload = String(line.dropFirst(6))
-
-                        if payload == "[DONE]" { break }
-
-                        guard let data = payload.data(using: .utf8),
-                              let json = try? JSONDecoder().decode(SSEChunk.self, from: data),
-                              let content = json.choices.first?.delta.content
-                        else { continue }
-
-                        continuation.yield(content)
-                    }
+                    try await streamOpenAISSE(bytes, response: response, to: continuation)
                     continuation.finish()
                 } catch {
                     continuation.finish(throwing: error)
@@ -122,19 +96,5 @@ struct OpenAICompatibleProvider: TranslationProvider {
         request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
         return request
-    }
-}
-
-// MARK: - SSE JSON Models
-
-private struct SSEChunk: Decodable {
-    let choices: [Choice]
-
-    struct Choice: Decodable {
-        let delta: Delta
-    }
-
-    struct Delta: Decodable {
-        let content: String?
     }
 }

@@ -20,9 +20,22 @@ final class TranslationProviderRegistry {
         providers.first { $0.id == id }
     }
 
+    /// Providers grouped by category, preserving registration order within each group.
+    var groupedProviders: [(category: ProviderCategory, providers: [any TranslationProvider])] {
+        var grouped: [ProviderCategory: [any TranslationProvider]] = [:]
+        for provider in providers {
+            grouped[provider.category, default: []].append(provider)
+        }
+        return ProviderCategory.allCases.compactMap { category in
+            guard let list = grouped[category], !list.isEmpty else { return nil }
+            return (category: category, providers: list)
+        }
+    }
+
     /// Factory method returning the built-in provider set.
     static func builtIn() -> TranslationProviderRegistry {
         var allProviders: [any TranslationProvider] = [
+            // LLM Services
             OpenAICompatibleProvider(
                 id: "openai",
                 displayName: "OpenAI",
@@ -30,8 +43,45 @@ final class TranslationProviderRegistry {
                 defaultBaseURL: "https://api.openai.com/v1",
                 defaultModel: "gpt-4o-mini"
             ),
+            OpenAICompatibleProvider(
+                id: "deepseek",
+                displayName: "DeepSeek",
+                iconSystemName: "brain.head.profile",
+                defaultBaseURL: "https://api.deepseek.com/v1",
+                defaultModel: "deepseek-chat"
+            ),
+            OpenAICompatibleProvider(
+                id: "groq",
+                displayName: "Groq",
+                iconSystemName: "bolt.fill",
+                defaultBaseURL: "https://api.groq.com/openai/v1",
+                defaultModel: "llama-3.3-70b-versatile"
+            ),
+            OpenAICompatibleProvider(
+                id: "zhipu",
+                displayName: "智谱 GLM",
+                iconSystemName: "sparkles",
+                defaultBaseURL: "https://open.bigmodel.cn/api/paas/v4",
+                defaultModel: "glm-4-flash"
+            ),
+            OpenAICompatibleProvider(
+                id: "github-models",
+                displayName: "GitHub Models",
+                iconSystemName: "cat.fill",
+                defaultBaseURL: "https://models.github.ai/inference",
+                defaultModel: "gpt-4o-mini"
+            ),
+            OllamaProvider(),
+
+            // Traditional Translation APIs
+            GoogleTranslateProvider(),
+            DeepLProvider(),
+            BaiduTranslateProvider(),
+            NiuTransProvider(),
+            CaiyunProvider(),
         ]
 
+        // System
         #if canImport(Translation)
         if #available(macOS 15.0, *) {
             allProviders.append(AppleTranslationProvider())

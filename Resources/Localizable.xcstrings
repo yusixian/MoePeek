@@ -101,6 +101,9 @@
         }
       }
     },
+    "App ID" : {
+
+    },
     "App Language" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -254,6 +257,17 @@
         }
       }
     },
+    "Check Connection" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "检查连接"
+          }
+        }
+      }
+    },
     "Check for Updates..." : {
       "extractionState" : "stale",
       "localizations" : {
@@ -266,7 +280,6 @@
       }
     },
     "Checking…" : {
-      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -440,6 +453,28 @@
         }
       }
     },
+    "Free, no API key needed" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "免费，无需 API Key"
+          }
+        }
+      }
+    },
+    "Free, no API key needed." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "免费，无需 API Key。"
+          }
+        }
+      }
+    },
     "From:" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -458,6 +493,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "通用"
+          }
+        }
+      }
+    },
+    "Get a free API key at deepl.com/pro-api" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 deepl.com/pro-api 获取免费 API Key"
+          }
+        }
+      }
+    },
+    "Get a token at platform.caiyunapp.com" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 platform.caiyunapp.com 获取令牌"
+          }
+        }
+      }
+    },
+    "Get an API key at niutrans.com" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 niutrans.com 获取 API Key"
+          }
+        }
+      }
+    },
+    "Get credentials at api.fanyi.baidu.com" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 api.fanyi.baidu.com 获取凭证"
           }
         }
       }
@@ -639,6 +714,17 @@
     "Licensed under AGPL-3.0" : {
 
     },
+    "LLM Services" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LLM 服务"
+          }
+        }
+      }
+    },
     "Lower = more aggressive detection (may be inaccurate); Higher = more conservative (may return unknown)" : {
       "localizations" : {
         "zh-Hans" : {
@@ -684,6 +770,17 @@
     "Model" : {
 
     },
+    "Model name" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "模型名称"
+          }
+        }
+      }
+    },
     "MoePeek" : {
 
     },
@@ -708,6 +805,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "MoePeek 需要屏幕录制权限来进行 OCR 截图翻译，识别屏幕上的文字。"
+          }
+        }
+      }
+    },
+    "More translation services available in Settings" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更多翻译服务请前往设置中配置"
           }
         }
       }
@@ -756,6 +863,17 @@
         }
       }
     },
+    "No model selected. Please select a model in Settings." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未选择模型，请在设置中选择一个模型。"
+          }
+        }
+      }
+    },
     "No Preference" : {
       "localizations" : {
         "zh-Hans" : {
@@ -799,6 +917,28 @@
         }
       }
     },
+    "Not checked" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未检测"
+          }
+        }
+      }
+    },
+    "Not detected" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未检测到"
+          }
+        }
+      }
+    },
     "OCR failed: %@" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -806,6 +946,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "OCR 失败：%@"
+          }
+        }
+      }
+    },
+    "Ollama server not running at %@" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ollama 服务器未在 %@ 运行"
           }
         }
       }
@@ -1016,6 +1167,17 @@
         }
       }
     },
+    "Running" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "运行中"
+          }
+        }
+      }
+    },
     "Screen capture was cancelled" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -1071,6 +1233,19 @@
         }
       }
     },
+    "Secret Key" : {
+
+    },
+    "Select a model" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择模型"
+          }
+        }
+      }
+    },
     "Select a provider" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -1110,6 +1285,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "选中翻译："
+          }
+        }
+      }
+    },
+    "Server" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服务器"
           }
         }
       }
@@ -1201,6 +1387,17 @@
         }
       }
     },
+    "System" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "系统"
+          }
+        }
+      }
+    },
     "System Default" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -1245,26 +1442,6 @@
         }
       }
     },
-    "Translate to:" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "翻译为："
-          }
-        }
-      }
-    },
-    "Translation" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "翻译"
-          }
-        }
-      }
-    },
     "Test Connection" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -1297,12 +1474,55 @@
         }
       }
     },
+    "Token" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "令牌"
+          }
+        }
+      }
+    },
+    "Translate to:" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "翻译为："
+          }
+        }
+      }
+    },
     "Translating…" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "翻译中…"
+          }
+        }
+      }
+    },
+    "Translation" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "翻译"
+          }
+        }
+      }
+    },
+    "Translation APIs" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "翻译 API"
           }
         }
       }
@@ -1357,6 +1577,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "使用 {targetLang} 作为目标语言的占位符。"
+          }
+        }
+      }
+    },
+    "Uses unofficial Google Translate API, may be rate-limited." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用非官方的 Google 翻译 API，可能会受到速率限制。"
           }
         }
       }
