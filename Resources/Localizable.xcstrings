@@ -255,6 +255,27 @@
         }
       }
     },
+    "Capability data from" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "能力数据来源"
+          }
+        }
+      }
+    },
+    "Capability info based on approximate match and may be inaccurate" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "能力信息基于模糊匹配，可能不准确"
+          }
+        }
+      }
+    },
     "Changing language requires restarting the app." : {
       "localizations" : {
         "zh-Hans" : {
@@ -1529,6 +1550,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "授权后状态会自动更新"
+          }
+        }
+      }
+    },
+    "Supports reasoning / chain-of-thought" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "支持推理 / 思维链"
+          }
+        }
+      }
+    },
+    "Supports tool calling" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "支持工具调用"
           }
         }
       }

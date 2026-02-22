@@ -11,6 +11,7 @@ struct OpenAIConfigFields: View {
     @State private var customModelInput: String
     @State private var modelText: String
     @State private var enabledModelsState: Set<String>
+    private let metaService = ModelMetadataService.shared
 
     init(provider: OpenAICompatibleProvider, compact: Bool = false) {
         self.provider = provider
@@ -145,6 +146,7 @@ struct OpenAIConfigFields: View {
                                         isEnabled: enabledModels.wrappedValue.contains(modelID),
                                         isUnknown: !filteredModels.contains(modelID),
                                         isDisabled: !enabledModels.wrappedValue.contains(modelID) && enabledModels.wrappedValue.count >= 20,
+                                        metaMatch: metaService.meta(for: modelID),
                                         onToggle: { toggleModel(modelID) }
                                     )
                                 }
@@ -173,6 +175,17 @@ struct OpenAIConfigFields: View {
                         Text("\(count) model(s) enabled — will run in parallel during translation.")
                             .font(.caption)
                             .foregroundStyle(.secondary)
+                    }
+
+                    if metaService.hasFetched, let modelsDevURL = URL(string: "https://models.dev") {
+                        HStack(spacing: 4) {
+                            Text("Capability data from")
+                                .font(.caption2)
+                                .foregroundStyle(.tertiary)
+                            Link("Models.dev", destination: modelsDevURL)
+                                .font(.caption2)
+                                .foregroundStyle(.tertiary)
+                        }
                     }
                 }
             }
@@ -203,6 +216,9 @@ struct OpenAIConfigFields: View {
                     silent: true
                 )
             }
+            if !compact {
+                await metaService.fetchIfNeeded()
+            }
         }
     }
 
@@ -232,6 +248,7 @@ struct ModelCheckboxRow: View {
     let isEnabled: Bool
     let isUnknown: Bool
     let isDisabled: Bool
+    var metaMatch: ModelMetadataService.MetaMatch? = nil
     let onToggle: () -> Void
 
     var body: some View {
@@ -247,6 +264,9 @@ struct ModelCheckboxRow: View {
                         .foregroundStyle(.orange)
                 }
                 Spacer()
+                if let match = metaMatch {
+                    ModelCapabilityBadges(match: match)
+                }
             }
             .contentShape(Rectangle())
         }
@@ -255,5 +275,53 @@ struct ModelCheckboxRow: View {
         .opacity(isDisabled ? 0.5 : 1)
         .padding(.vertical, 2)
         .padding(.horizontal, 4)
+    }
+}
+
+// MARK: - Model Capability Badges
+
+private struct ModelCapabilityBadges: View {
+    let match: ModelMetadataService.MetaMatch
+
+    private var meta: ModelMetadataService.ModelMeta { match.meta }
+    private var isApproximate: Bool { match.matchKind == .approximate }
+
+    var body: some View {
+        HStack(spacing: 4) {
+            if let ctx = meta.contextWindow {
+                Text(formatContext(ctx))
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+            if meta.toolCall {
+                Image(systemName: "hammer")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .help(LocalizedStringKey("Supports tool calling"))
+            }
+            if meta.reasoning {
+                Image(systemName: "brain")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .help(LocalizedStringKey("Supports reasoning / chain-of-thought"))
+            }
+            if isApproximate {
+                Image(systemName: "questionmark.circle")
+                    .font(.caption2)
+                    .foregroundStyle(.orange)
+                    .help(LocalizedStringKey("Capability info based on approximate match and may be inaccurate"))
+            }
+        }
+        .opacity(isApproximate ? 0.6 : 1)
+    }
+
+    private func formatContext(_ tokens: Int) -> String {
+        if tokens >= 1_000_000 {
+            return tokens % 1_000_000 == 0
+                ? "\(tokens / 1_000_000)M"
+                : String(format: "%.1fM", Double(tokens) / 1_000_000)
+        }
+        if tokens >= 1_000 { return "\(tokens / 1_000)K" }
+        return "\(tokens)"
     }
 }
