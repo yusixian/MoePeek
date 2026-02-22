@@ -70,7 +70,7 @@ struct GeneralSettingsView: View {
                     }
                 }
 
-                Toggle("Auto-translate selected text", isOn: $isAutoDetectEnabled)
+                Toggle("Show floating icon on text selection", isOn: $isAutoDetectEnabled)
             }
 
             Section("Language Detection") {
