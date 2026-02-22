@@ -70,29 +70,60 @@ final class ModelMetadataService {
     }
 
     /// Returns metadata for the given model ID with match confidence.
-    /// Tries exact match first, then falls back to short-name (case-insensitive) lookup.
-    /// When multiple candidates have conflicting capabilities, returns a conservative merge
-    /// marked as `.approximate`.
+    ///
+    /// Three matching paths, tried in order:
+    /// 1. **Exact full ID** — `modelIndex[modelID]` → `.exact`
+    /// 2. **Exact bare name** — strip provider prefix, lookup in `shortIndex` → `.exact`
+    /// 3. **Fuzzy substring** — find the best `shortIndex` key where query contains key
+    ///    or key contains query → `.approximate` (shown with orange question mark in UI)
+    ///
+    /// Returns `nil` when no match is found at any level.
     func meta(for modelID: String) -> MetaMatch? {
         // 1. Exact model ID match (across all providers)
         if let candidates = modelIndex[modelID] {
-            return merge(candidates)
+            return merge(candidates, matchKind: .exact)
         }
 
-        // 2. Short-name fallback
+        // 2. Short-name exact match (bare name after stripping provider prefix)
         let bare = (modelID.components(separatedBy: "/").last ?? modelID).lowercased()
-        guard let candidates = shortIndex[bare] else { return nil }
-        return merge(candidates)
+        if let candidates = shortIndex[bare] {
+            return merge(candidates, matchKind: .exact)
+        }
+
+        // 3. Fuzzy substring match against known bare names
+        return fuzzyMatch(bare)
+    }
+
+    /// Finds the best candidate where the query contains a known bare name or vice versa.
+    ///
+    /// Among all matching keys, the longest one is chosen to maximize specificity
+    /// (e.g. for query "gpt-4o-2024-08-06", prefer key "gpt-4o" over "gpt-4").
+    /// Returns `.approximate` to signal uncertainty — UI shows an orange question mark.
+    private func fuzzyMatch(_ query: String) -> MetaMatch? {
+        var bestKey: String?
+        var bestLength = 0
+
+        for key in shortIndex.keys {
+            guard query.contains(key) else { continue }
+            if key.count > bestLength {
+                bestLength = key.count
+                bestKey = key
+            }
+        }
+
+        guard let bestKey, let candidates = shortIndex[bestKey] else { return nil }
+        return merge(candidates, matchKind: .approximate)
     }
 
     /// Merges multiple candidate metadata entries into a single `MetaMatch`.
-    /// - Single candidate or all-consistent capabilities → `.exact`
-    /// - Conflicting capabilities → conservative merge marked `.approximate`
-    private func merge(_ candidates: [ModelMeta]) -> MetaMatch? {
+    /// Uses conservative merge (capabilities must be unanimous) when candidates conflict,
+    /// but `matchKind` is determined by the caller based on how the match was found,
+    /// not by whether the data sources agree on capabilities.
+    private func merge(_ candidates: [ModelMeta], matchKind: MatchKind = .exact) -> MetaMatch? {
         guard !candidates.isEmpty else { return nil }
 
         if candidates.count == 1 {
-            return MetaMatch(meta: candidates[0], matchKind: .exact)
+            return MetaMatch(meta: candidates[0], matchKind: matchKind)
         }
 
         let allSame = candidates.allSatisfy {
@@ -106,7 +137,7 @@ final class ModelMetadataService {
                 reasoning: candidates[0].reasoning,
                 contextWindow: candidates.compactMap(\.contextWindow).max()
             )
-            return MetaMatch(meta: merged, matchKind: .exact)
+            return MetaMatch(meta: merged, matchKind: matchKind)
         }
 
         // Capabilities conflict — conservative: only mark supported if ALL agree
@@ -115,7 +146,7 @@ final class ModelMetadataService {
             reasoning: candidates.allSatisfy(\.reasoning),
             contextWindow: candidates.compactMap(\.contextWindow).max()
         )
-        return MetaMatch(meta: merged, matchKind: .approximate)
+        return MetaMatch(meta: merged, matchKind: matchKind)
     }
 }
 

@@ -258,7 +258,7 @@ struct ModelCheckboxRow: View {
                     .foregroundStyle(isEnabled ? Color.accentColor : .secondary)
                 Text(modelID)
                     .lineLimit(1)
-                if isUnknown {
+                if isUnknown && metaMatch == nil {
                     Text("(unknown)")
                         .font(.caption2)
                         .foregroundStyle(.orange)
