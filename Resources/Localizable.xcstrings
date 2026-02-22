@@ -209,16 +209,6 @@
         }
       }
     },
-    "Show floating icon on text selection" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "选中文字时显示悬浮球"
-          }
-        }
-      }
-    },
     "Automatically check for updates" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -324,6 +314,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "从列表中选择一个翻译服务进行配置。"
+          }
+        }
+      }
+    },
+    "Click the refresh button above to fetch available models, or add a custom model below." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "点击上方刷新按钮获取可用模型，或在下方手动添加。"
+          }
+        }
+      }
+    },
+    "Click the refresh button above to fetch available models." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "点击上方刷新按钮获取可用模型。"
           }
         }
       }
@@ -1372,6 +1382,16 @@
         }
       }
     },
+    "Select models to run in parallel during translation." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择翻译时并行运行的模型。"
+          }
+        }
+      }
+    },
     "Select Translation Service" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1444,6 +1464,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "在程序坞中显示图标"
+          }
+        }
+      }
+    },
+    "Show floating icon on text selection" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选中文字时显示悬浮球"
           }
         }
       }
@@ -1763,6 +1794,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "有道解密失败，请重试。"
+          }
+        }
+      }
+    },
+    "Youdao response parsing failed. The service may be temporarily unavailable." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有道翻译响应解析失败，服务可能暂时不可用。"
           }
         }
       }

@@ -332,7 +332,7 @@ struct OnboardingView: View {
                 .padding(.horizontal, 24)
 
             if let provider = openaiProvider {
-                OpenAIConfigFields(provider: provider)
+                OpenAIConfigFields(provider: provider, compact: true)
                     .padding(.horizontal, 32)
             }
 

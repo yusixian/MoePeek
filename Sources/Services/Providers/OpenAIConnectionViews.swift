@@ -12,15 +12,25 @@ struct ModelFetchAccessory: View {
             ProgressView()
                 .controlSize(.small)
         } else if !connectionManager.fetchedModels.isEmpty {
-            Menu {
-                ForEach(connectionManager.fetchedModels, id: \.self) { id in
-                    Button(id) { model = id }
+            HStack(spacing: 2) {
+                Menu {
+                    ForEach(connectionManager.fetchedModels, id: \.self) { id in
+                        Button(id) { model = id }
+                    }
+                } label: {
+                    Image(systemName: "chevron.down.circle")
                 }
-            } label: {
-                Image(systemName: "chevron.down.circle")
+                .menuStyle(.borderlessButton)
+                .fixedSize()
+
+                Button {
+                    Task { await connectionManager.fetchModels(baseURL: baseURL, apiKey: apiKey) }
+                } label: {
+                    Image(systemName: "arrow.clockwise.circle")
+                }
+                .buttonStyle(.borderless)
+                .help("Refresh model list")
             }
-            .menuStyle(.borderlessButton)
-            .fixedSize()
         } else {
             Button {
                 Task { await connectionManager.fetchModels(baseURL: baseURL, apiKey: apiKey) }

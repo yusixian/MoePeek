@@ -5,17 +5,40 @@ import SwiftUI
 /// Binds directly to Defaults keys so values update immediately when switching providers.
 struct OpenAIConfigFields: View {
     let provider: OpenAICompatibleProvider
+    var compact: Bool = false
 
-    @State private var connectionManager = OpenAIConnectionManager()
-    @State private var customModelInput = ""
+    @State private var connectionManager: OpenAIConnectionManager
+    @State private var customModelInput: String
+    @State private var modelText: String
+    @State private var enabledModelsState: Set<String>
+
+    init(provider: OpenAICompatibleProvider, compact: Bool = false) {
+        self.provider = provider
+        self.compact = compact
+        self._connectionManager = State(initialValue: OpenAIConnectionManager())
+        self._customModelInput = State(initialValue: "")
+        self._modelText = State(initialValue: Defaults[provider.modelKey])
+        self._enabledModelsState = State(initialValue: Defaults[provider.enabledModelsKey])
+    }
 
     private var baseURL: Binding<String> { Defaults.binding(provider.baseURLKey) }
     private var apiKey: Binding<String> { Defaults.binding(provider.apiKeyKey) }
-    private var model: Binding<String> { Defaults.binding(provider.modelKey) }
+    private var model: Binding<String> {
+        Binding(
+            get: { modelText },
+            set: { newValue in
+                modelText = newValue
+                Defaults[provider.modelKey] = newValue
+            }
+        )
+    }
     private var enabledModels: Binding<Set<String>> {
         Binding(
-            get: { Defaults[provider.enabledModelsKey] },
-            set: { Defaults[provider.enabledModelsKey] = $0 }
+            get: { enabledModelsState },
+            set: {
+                enabledModelsState = $0
+                Defaults[provider.enabledModelsKey] = $0
+            }
         )
     }
 
@@ -75,7 +98,7 @@ struct OpenAIConfigFields: View {
                         apiKey: apiKey.wrappedValue
                     )
                 }
-                if enabledModels.wrappedValue.isEmpty {
+                if !compact, enabledModels.wrappedValue.isEmpty {
                     Text("Used when no models are selected below.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
@@ -88,67 +111,69 @@ struct OpenAIConfigFields: View {
                     .foregroundStyle(.red)
             }
 
-            // Multi-model selection
-            VStack(alignment: .leading, spacing: 6) {
-                HStack {
-                    Text("Parallel Models")
-                        .font(.subheadline.bold())
-                    Spacer()
-                    if !enabledModels.wrappedValue.isEmpty {
-                        Button("Clear All") {
-                            enabledModels.wrappedValue = []
+            if !compact {
+                // Multi-model selection
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack {
+                        Text("Parallel Models")
+                            .font(.subheadline.bold())
+                        Spacer()
+                        if !enabledModels.wrappedValue.isEmpty {
+                            Button("Clear All") {
+                                enabledModels.wrappedValue = []
+                            }
+                            .font(.caption)
+                            .buttonStyle(.borderless)
                         }
-                        .font(.caption)
-                        .buttonStyle(.borderless)
                     }
-                }
 
-                Text("Select models to run in parallel during translation (max 5).")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-
-                if displayModels.isEmpty {
-                    Text("Click the refresh button above to fetch available models, or add a custom model below.")
+                    Text("Select models to run in parallel during translation.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
-                        .padding(.vertical, 4)
-                } else {
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: 2) {
-                            ForEach(displayModels, id: \.self) { modelID in
-                                ModelCheckboxRow(
-                                    modelID: modelID,
-                                    isEnabled: enabledModels.wrappedValue.contains(modelID),
-                                    isUnknown: !filteredModels.contains(modelID),
-                                    isDisabled: !enabledModels.wrappedValue.contains(modelID) && enabledModels.wrappedValue.count >= 5,
-                                    onToggle: { toggleModel(modelID) }
-                                )
+
+                    if displayModels.isEmpty {
+                        Text("Click the refresh button above to fetch available models, or add a custom model below.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .padding(.vertical, 4)
+                    } else {
+                        ScrollView {
+                            VStack(alignment: .leading, spacing: 2) {
+                                ForEach(displayModels, id: \.self) { modelID in
+                                    ModelCheckboxRow(
+                                        modelID: modelID,
+                                        isEnabled: enabledModels.wrappedValue.contains(modelID),
+                                        isUnknown: !filteredModels.contains(modelID),
+                                        isDisabled: !enabledModels.wrappedValue.contains(modelID) && enabledModels.wrappedValue.count >= 20,
+                                        onToggle: { toggleModel(modelID) }
+                                    )
+                                }
                             }
                         }
+                        .frame(maxHeight: 160)
                     }
-                    .frame(maxHeight: 160)
-                }
 
-                // Add custom model
-                HStack(spacing: 4) {
-                    TextField("Add custom model…", text: $customModelInput)
-                        .textFieldStyle(.roundedBorder)
-                        .onSubmit { addCustomModel() }
+                    // Add custom model
+                    HStack(spacing: 4) {
+                        TextField("Add custom model…", text: $customModelInput)
+                            .textFieldStyle(.roundedBorder)
+                            .onSubmit { addCustomModel() }
 
-                    Button {
-                        addCustomModel()
-                    } label: {
-                        Image(systemName: "plus.circle")
+                        Button {
+                            addCustomModel()
+                        } label: {
+                            Image(systemName: "plus.circle")
+                        }
+                        .buttonStyle(.borderless)
+                        .disabled(customModelInput.trimmingCharacters(in: .whitespaces).isEmpty || enabledModels.wrappedValue.count >= 20)
                     }
-                    .buttonStyle(.borderless)
-                    .disabled(customModelInput.trimmingCharacters(in: .whitespaces).isEmpty || enabledModels.wrappedValue.count >= 5)
-                }
 
-                let count = enabledModels.wrappedValue.count
-                if count > 0 {
-                    Text("\(count) model(s) enabled — will run in parallel during translation.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    let count = enabledModels.wrappedValue.count
+                    if count > 0 {
+                        Text("\(count) model(s) enabled — will run in parallel during translation.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
                 }
             }
 
@@ -161,8 +186,15 @@ struct OpenAIConfigFields: View {
         }
         .onChange(of: baseURL.wrappedValue) { _, _ in connectionManager.clearModels() }
         .onChange(of: apiKey.wrappedValue) { _, _ in connectionManager.clearModels() }
+        .onReceive(Defaults.publisher(provider.modelKey).map(\.newValue)) { newValue in
+            if modelText != newValue { modelText = newValue }
+        }
+        .onReceive(Defaults.publisher(provider.enabledModelsKey).map(\.newValue)) { newValue in
+            if enabledModelsState != newValue { enabledModelsState = newValue }
+        }
         .task {
-            if connectionManager.fetchedModels.isEmpty,
+            if !compact,
+               connectionManager.fetchedModels.isEmpty,
                !apiKey.wrappedValue.isEmpty,
                !baseURL.wrappedValue.isEmpty {
                 await connectionManager.fetchModels(
@@ -179,7 +211,7 @@ struct OpenAIConfigFields: View {
         if current.contains(modelID) {
             current.remove(modelID)
         } else {
-            guard current.count < 5 else { return }
+            guard current.count < 20 else { return }
             current.insert(modelID)
         }
         enabledModels.wrappedValue = current
@@ -187,7 +219,7 @@ struct OpenAIConfigFields: View {
 
     private func addCustomModel() {
         let trimmed = customModelInput.trimmingCharacters(in: .whitespaces)
-        guard !trimmed.isEmpty, enabledModels.wrappedValue.count < 5 else { return }
+        guard !trimmed.isEmpty, enabledModels.wrappedValue.count < 20 else { return }
         enabledModels.wrappedValue.insert(trimmed)
         customModelInput = ""
     }

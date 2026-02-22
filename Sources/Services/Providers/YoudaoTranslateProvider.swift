@@ -41,7 +41,7 @@ struct YoudaoTranslateProvider: TranslationProvider {
     private static let client = "fanyideskweb"
     private static let product = "webfanyi"
 
-    private func translate(_ text: String, from sourceLang: String?, to targetLang: String) async throws -> String {
+    private func translate(_ text: String, from sourceLang: String?, to targetLang: String, retryCount: Int = 0) async throws -> String {
         let sl = LanguageCodeMapping.resolve(sourceLang, using: LanguageCodeMapping.youdao) ?? "auto"
         let tl = LanguageCodeMapping.resolveTarget(targetLang, using: LanguageCodeMapping.youdao)
 
@@ -116,7 +116,20 @@ struct YoudaoTranslateProvider: TranslationProvider {
             throw TranslationError.invalidResponse
         }
 
-        let decoded = try JSONDecoder().decode(YoudaoTranslateResponse.self, from: jsonData)
+        let decoded: YoudaoTranslateResponse
+        do {
+            decoded = try JSONDecoder().decode(YoudaoTranslateResponse.self, from: jsonData)
+        } catch {
+            // Decrypted data is not valid JSON — keys may be stale
+            await YoudaoKeyManager.shared.invalidate()
+            if retryCount < 1 {
+                return try await translate(text, from: sourceLang, to: targetLang, retryCount: retryCount + 1)
+            }
+            throw TranslationError.apiError(
+                statusCode: 0,
+                message: String(localized: "Youdao response parsing failed. The service may be temporarily unavailable.")
+            )
+        }
 
         guard decoded.code == 0 else {
             throw TranslationError.apiError(
@@ -173,6 +186,14 @@ private actor YoudaoKeyManager {
         let secretKey: String
         let aesKey: String
         let aesIv: String
+    }
+
+    private static func makeFallbackKeys() -> Keys {
+        Keys(
+            secretKey: defaultSecretKey,
+            aesKey: "ydsecret://query/key/B*RGygVywfNBwpmBaZg*WT7SIOUP2T0C9WHMZN39j^DAdaZhAnxvGcCY6VYFwnHl",
+            aesIv: "ydsecret://query/iv/C@lZe2YzHtZ2CYgaXKSVfsb7Y4QWHjITPPZ0nQp87fBeJ!Iv6v^6fvi2WN@bYpJ4"
+        )
     }
 
     private var cachedKeys: Keys?
@@ -233,17 +254,23 @@ private actor YoudaoKeyManager {
 
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             // Fallback to hardcoded defaults if key fetch fails
-            let fallback = Keys(
-                secretKey: Self.defaultSecretKey,
-                aesKey: "ydsecret://query/key/B*RGygVywfNBwpmBaZg*WT7SIOUP2T0C9WHMZN39j^DAdaZhAnxvGcCY6VYFwnHl",
-                aesIv: "ydsecret://query/iv/C@lZe2YzHtZ2CYgaXKSVfsb7Y4QWHjITPPZ0nQp87fBeJ!Iv6v^6fvi2WN@bYpJ4"
-            )
+            let fallback = Self.makeFallbackKeys()
             self.cachedKeys = fallback
             self.fetchedAt = Date()
             return fallback
         }
 
-        let decoded = try JSONDecoder().decode(YoudaoKeyResponse.self, from: data)
+        let decoded: YoudaoKeyResponse
+        do {
+            decoded = try JSONDecoder().decode(YoudaoKeyResponse.self, from: data)
+        } catch {
+            // Key endpoint returned non-JSON — fall back to hardcoded defaults
+            let fallback = Self.makeFallbackKeys()
+            self.cachedKeys = fallback
+            self.fetchedAt = Date()
+            return fallback
+        }
+
         guard decoded.code == 0 else {
             throw TranslationError.apiError(
                 statusCode: 0,
