@@ -8,6 +8,8 @@ struct OpenAIConfigFields: View {
     var compact: Bool = false
 
     @State private var connectionManager: OpenAIConnectionManager
+    @State private var baseURLText: String
+    @State private var apiKeyText: String
     @State private var customModelInput: String
     @State private var modelText: String
     @State private var enabledModelsState: Set<String>
@@ -17,13 +19,31 @@ struct OpenAIConfigFields: View {
         self.provider = provider
         self.compact = compact
         self._connectionManager = State(initialValue: OpenAIConnectionManager())
+        self._baseURLText = State(initialValue: Defaults[provider.baseURLKey])
+        self._apiKeyText = State(initialValue: Defaults[provider.apiKeyKey])
         self._customModelInput = State(initialValue: "")
         self._modelText = State(initialValue: Defaults[provider.modelKey])
         self._enabledModelsState = State(initialValue: Defaults[provider.enabledModelsKey])
     }
 
-    private var baseURL: Binding<String> { Defaults.binding(provider.baseURLKey) }
-    private var apiKey: Binding<String> { Defaults.binding(provider.apiKeyKey) }
+    private var baseURL: Binding<String> {
+        Binding(
+            get: { baseURLText },
+            set: { newValue in
+                baseURLText = newValue
+                Defaults[provider.baseURLKey] = newValue
+            }
+        )
+    }
+    private var apiKey: Binding<String> {
+        Binding(
+            get: { apiKeyText },
+            set: { newValue in
+                apiKeyText = newValue
+                Defaults[provider.apiKeyKey] = newValue
+            }
+        )
+    }
     private var model: Binding<String> {
         Binding(
             get: { modelText },
@@ -95,8 +115,8 @@ struct OpenAIConfigFields: View {
                     ModelFetchAccessory(
                         connectionManager: connectionManager,
                         model: model,
-                        baseURL: baseURL.wrappedValue,
-                        apiKey: apiKey.wrappedValue
+                        baseURL: baseURLText,
+                        apiKey: apiKeyText
                     )
                 }
                 if !compact, enabledModels.wrappedValue.isEmpty {
@@ -192,13 +212,19 @@ struct OpenAIConfigFields: View {
 
             ConnectionTestView(
                 connectionManager: connectionManager,
-                baseURL: baseURL.wrappedValue,
-                apiKey: apiKey.wrappedValue,
+                baseURL: baseURLText,
+                apiKey: apiKeyText,
                 model: model.wrappedValue
             )
         }
-        .onChange(of: baseURL.wrappedValue) { _, _ in connectionManager.clearModels() }
-        .onChange(of: apiKey.wrappedValue) { _, _ in connectionManager.clearModels() }
+        .onChange(of: baseURLText) { _, _ in connectionManager.clearModels() }
+        .onChange(of: apiKeyText) { _, _ in connectionManager.clearModels() }
+        .onReceive(Defaults.publisher(provider.baseURLKey).map(\.newValue)) { newValue in
+            if baseURLText != newValue { baseURLText = newValue }
+        }
+        .onReceive(Defaults.publisher(provider.apiKeyKey).map(\.newValue)) { newValue in
+            if apiKeyText != newValue { apiKeyText = newValue }
+        }
         .onReceive(Defaults.publisher(provider.modelKey).map(\.newValue)) { newValue in
             if modelText != newValue { modelText = newValue }
         }
@@ -208,11 +234,11 @@ struct OpenAIConfigFields: View {
         .task {
             if !compact,
                connectionManager.fetchedModels.isEmpty,
-               !apiKey.wrappedValue.isEmpty,
-               !baseURL.wrappedValue.isEmpty {
+               !apiKeyText.isEmpty,
+               !baseURLText.isEmpty {
                 await connectionManager.fetchModels(
-                    baseURL: baseURL.wrappedValue,
-                    apiKey: apiKey.wrappedValue,
+                    baseURL: baseURLText,
+                    apiKey: apiKeyText,
                     silent: true
                 )
             }
