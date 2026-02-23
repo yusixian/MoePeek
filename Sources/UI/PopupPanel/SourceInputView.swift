@@ -16,6 +16,7 @@ struct SourceInputView: View {
                 .scrollContentBackground(.hidden)
                 .focused($isFocused)
                 .frame(maxHeight: .infinity)
+                .background { InteractiveMarker() }
                 .onKeyPress(phases: .down) { press in
                     guard press.key == .return else { return .ignored }
                     if press.modifiers.contains(.shift) {
