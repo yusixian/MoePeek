@@ -119,6 +119,10 @@ MoePeek 的诞生受到了 [Easydict](https://github.com/tisfeng/Easydict) 和 [
 
 <a href="https://afdian.com/a/cosyu"><img width="20%" src="https://pic1.afdiancdn.com/static/img/welcome/button-sponsorme.jpg" alt="在爱发电上赞助"></a>
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=cosZone/MoePeek&type=date&legend=top-left)](https://www.star-history.com/#cosZone/MoePeek&type=date&legend=top-left)
+
 ## 许可证
 
 [AGPL-3.0](LICENSE)
