@@ -1,7 +1,16 @@
 import AppKit
 import Vision
+import os
 
 enum ScreenCaptureOCR {
+    /// Atomically claim a one-shot flag. Returns `true` on first call, `false` thereafter.
+    private static func claimOnce(_ lock: OSAllocatedUnfairLock<Bool>) -> Bool {
+        lock.withLock { val in
+            if val { return false }
+            val = true
+            return true
+        }
+    }
     /// Launch interactive screen capture, OCR the captured image, and return recognized text.
     static func captureAndRecognize() async throws -> String {
         // Run screencapture -i -c (interactive selection → clipboard)
@@ -11,12 +20,17 @@ enum ScreenCaptureOCR {
 
         let status = try await withTaskCancellationHandler {
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Int32, Error>) in
+                let resumed = OSAllocatedUnfairLock(initialState: false)
+
                 process.terminationHandler = { proc in
+                    guard claimOnce(resumed) else { return }
                     continuation.resume(returning: proc.terminationStatus)
                 }
                 do {
                     try process.run()
                 } catch {
+                    guard claimOnce(resumed) else { return }
+                    process.terminationHandler = nil
                     continuation.resume(throwing: error)
                 }
             }
@@ -45,7 +59,11 @@ enum ScreenCaptureOCR {
 
     private static func recognizeText(in image: CGImage) async throws -> String {
         try await withCheckedThrowingContinuation { continuation in
+            let resumed = OSAllocatedUnfairLock(initialState: false)
+
             let request = VNRecognizeTextRequest { request, error in
+                guard claimOnce(resumed) else { return }
+
                 if let error {
                     continuation.resume(throwing: error)
                     return
@@ -71,6 +89,7 @@ enum ScreenCaptureOCR {
             do {
                 try handler.perform([request])
             } catch {
+                guard claimOnce(resumed) else { return }
                 continuation.resume(throwing: error)
             }
         }
