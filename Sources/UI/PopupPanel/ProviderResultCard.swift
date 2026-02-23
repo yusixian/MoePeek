@@ -1,3 +1,4 @@
+import Defaults
 import SwiftUI
 
 /// A collapsible card showing a single provider's translation result.
@@ -6,6 +7,7 @@ struct ProviderResultCard: View {
     let state: TranslationCoordinator.ProviderState
     @Binding var isExpanded: Bool
     var onRetry: (() -> Void)?
+    @Default(.popupFontSize) private var fontSize
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -17,16 +19,16 @@ struct ProviderResultCard: View {
             } label: {
                 HStack(spacing: 6) {
                     Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
-                        .font(.caption2)
+                        .font(.system(size: CGFloat(fontSize - 4)))
                         .foregroundStyle(.tertiary)
                         .frame(width: 10)
 
                     Image(systemName: provider.iconSystemName)
-                        .font(.caption)
+                        .font(.system(size: CGFloat(fontSize - 2)))
                         .foregroundStyle(.secondary)
 
                     Text(provider.displayName)
-                        .font(.caption)
+                        .font(.system(size: CGFloat(fontSize - 2)))
                         .fontWeight(.medium)
 
                     Spacer()
@@ -75,11 +77,11 @@ struct ProviderResultCard: View {
                 .controlSize(.mini)
         case .completed:
             Image(systemName: "checkmark.circle.fill")
-                .font(.caption)
+                .font(.system(size: CGFloat(fontSize - 2)))
                 .foregroundStyle(.green)
         case .error:
             Image(systemName: "exclamationmark.triangle.fill")
-                .font(.caption)
+                .font(.system(size: CGFloat(fontSize - 2)))
                 .foregroundStyle(.red)
         }
     }
@@ -91,16 +93,16 @@ struct ProviderResultCard: View {
         switch state {
         case .waiting:
             Text("Waiting…")
-                .font(.callout)
+                .font(.system(size: CGFloat(fontSize)))
                 .foregroundStyle(.tertiary)
         case .translating:
             Text("Translating…")
-                .font(.callout)
+                .font(.system(size: CGFloat(fontSize)))
                 .foregroundStyle(.secondary)
         case let .streaming(partial):
             VStack(alignment: .leading, spacing: 4) {
                 Text(partial)
-                    .font(.callout)
+                    .font(.system(size: CGFloat(fontSize)))
                     .textSelection(.enabled)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -108,7 +110,7 @@ struct ProviderResultCard: View {
         case let .completed(text):
             VStack(alignment: .leading, spacing: 4) {
                 Text(text)
-                    .font(.callout)
+                    .font(.system(size: CGFloat(fontSize)))
                     .textSelection(.enabled)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -119,7 +121,7 @@ struct ProviderResultCard: View {
                         NSPasteboard.general.setString(text, forType: .string)
                     } label: {
                         Label("Copy", systemImage: "doc.on.doc")
-                            .font(.caption)
+                            .font(.system(size: CGFloat(fontSize - 2)))
                     }
                     .buttonStyle(.bordered)
                     .controlSize(.mini)
@@ -129,7 +131,7 @@ struct ProviderResultCard: View {
         case let .error(message):
             VStack(alignment: .leading, spacing: 4) {
                 Label(message, systemImage: "exclamationmark.triangle")
-                    .font(.callout)
+                    .font(.system(size: CGFloat(fontSize)))
                     .foregroundStyle(.red)
 
                 if let onRetry {
@@ -137,7 +139,7 @@ struct ProviderResultCard: View {
                         Spacer()
                         Button(action: onRetry) {
                             Label("Retry", systemImage: "arrow.clockwise")
-                                .font(.caption)
+                                .font(.system(size: CGFloat(fontSize - 2)))
                         }
                         .buttonStyle(.bordered)
                         .controlSize(.mini)

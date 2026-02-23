@@ -9,6 +9,7 @@ struct GeneralSettingsView: View {
     @Default(.showInDock) private var showInDock
     @Default(.popupDefaultWidth) private var popupDefaultWidth
     @Default(.popupDefaultHeight) private var popupDefaultHeight
+    @Default(.popupFontSize) private var popupFontSize
     @Default(.sourceLanguage) private var sourceLanguage
     @Default(.detectionConfidenceThreshold) private var confidenceThreshold
     @Default(.appLanguage) private var appLanguage
@@ -111,6 +112,17 @@ struct GeneralSettingsView: View {
                         ),
                         in: 200...800,
                         step: 10
+                    )
+                }
+
+                LabeledContent("Font Size: \(popupFontSize)") {
+                    Slider(
+                        value: Binding(
+                            get: { Double(popupFontSize) },
+                            set: { popupFontSize = Int($0) }
+                        ),
+                        in: 12...24,
+                        step: 1
                     )
                 }
             }

@@ -1,16 +1,18 @@
+import Defaults
 import SwiftUI
 
 /// Editable source text input with Enter to translate, Shift+Enter for newline.
 struct SourceInputView: View {
     @Binding var text: String
     let onSubmit: () -> Void
+    @Default(.popupFontSize) private var fontSize
 
     @FocusState private var isFocused: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             TextEditor(text: $text)
-                .font(.callout)
+                .font(.system(size: CGFloat(fontSize)))
                 .scrollContentBackground(.hidden)
                 .focused($isFocused)
                 .frame(maxHeight: .infinity)
@@ -27,7 +29,7 @@ struct SourceInputView: View {
                 Spacer()
 
                 Text("↵ Translate · ⇧↵ Newline")
-                    .font(.caption2)
+                    .font(.system(size: CGFloat(fontSize - 4)))
                     .foregroundStyle(.quaternary)
             }
         }

@@ -84,6 +84,7 @@ extension Defaults.Keys {
     static let popupDefaultWidth = Key<Int>("popupDefaultWidth", default: 450)
     static let popupDefaultHeight = Key<Int>("popupDefaultHeight", default: 350)
     static let popupInputHeight = Key<Int>("popupInputHeight", default: 48)
+    static let popupFontSize = Key<Int>("popupFontSize", default: 12)
 
     // Settings tab selection
     static let selectedSettingsTab = Key<SettingsTab>("selectedSettingsTab", default: .general)

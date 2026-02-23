@@ -12,6 +12,7 @@ struct PopupView: View {
     @State private var targetLang: String = Defaults[.targetLanguage]
     @State private var inputHeight: CGFloat = CGFloat(Defaults[.popupInputHeight])
     @State private var containerHeight: CGFloat = CGFloat(Defaults[.popupDefaultHeight])
+    @Default(.popupFontSize) private var fontSize
 
     private let inputMinHeight: CGFloat = 36
 
@@ -131,7 +132,7 @@ struct PopupView: View {
                         onOpenSettings?()
                     } label: {
                         Image(systemName: "gearshape")
-                            .font(.caption)
+                            .font(.system(size: CGFloat(fontSize - 2)))
                             .foregroundStyle(.secondary)
                     }
                     .buttonStyle(.plain)

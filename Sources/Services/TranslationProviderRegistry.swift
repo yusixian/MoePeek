@@ -115,6 +115,7 @@ final class TranslationProviderRegistry {
                 guideURL: "https://open.bigmodel.cn/usercenter/apikeys"
             ),
             OllamaProvider(),
+            LMStudioProvider(),
         ]
 
         // System

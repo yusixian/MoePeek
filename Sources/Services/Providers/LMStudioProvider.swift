@@ -2,25 +2,24 @@ import Defaults
 import Foundation
 import SwiftUI
 
-/// Ollama local LLM provider. Uses Ollama's native API for model listing
-/// and OpenAI-compatible endpoint for translation.
-struct OllamaProvider: TranslationProvider {
-    let id = "ollama"
-    let displayName = "Ollama"
-    let iconSystemName = "desktopcomputer"
+/// LM Studio local LLM provider. Uses OpenAI-compatible API endpoints
+/// (default: http://localhost:1234/v1). No API key required.
+struct LMStudioProvider: TranslationProvider {
+    let id = "lmstudio"
+    let displayName = "LM Studio"
+    let iconSystemName = "cpu"
     let category: ProviderCategory = .llm
     let supportsStreaming = true
     let isAvailable = true
 
-    let baseURLKey = Defaults.Key<String>("provider_ollama_baseURL", default: "http://localhost:11434")
-    let modelKey = Defaults.Key<String>("provider_ollama_model", default: "")
-    let enabledModelsKey = Defaults.Key<Set<String>>("provider_ollama_enabledModels", default: [])
+    let baseURLKey = Defaults.Key<String>("provider_lmstudio_baseURL", default: "http://localhost:1234/v1")
+    let modelKey = Defaults.Key<String>("provider_lmstudio_model", default: "")
+    let enabledModelsKey = Defaults.Key<Set<String>>("provider_lmstudio_enabledModels", default: [])
     let systemPromptKey = Defaults.Key<String>(
-        "provider_ollama_systemPrompt",
+        "provider_lmstudio_systemPrompt",
         default: "Translate the following text to {targetLang}. Only output the translation, nothing else."
     )
 
-    /// Models explicitly enabled for parallel translation. Empty means use default single model.
     var activeModels: [String] {
         let enabled = Defaults[enabledModelsKey]
         return enabled.isEmpty ? [] : enabled.sorted()
@@ -58,7 +57,7 @@ struct OllamaProvider: TranslationProvider {
                         )
                     }
 
-                    guard let url = URL(string: "\(baseURL)/v1/chat/completions") else {
+                    guard let url = URL(string: "\(baseURL)/chat/completions") else {
                         throw TranslationError.invalidURL
                     }
 
@@ -86,7 +85,7 @@ struct OllamaProvider: TranslationProvider {
                 } catch let error as URLError where error.code == .cannotConnectToHost || error.code == .timedOut {
                     continuation.finish(throwing: TranslationError.apiError(
                         statusCode: 0,
-                        message: String(localized: "Ollama server not running at \(baseURL)")
+                        message: String(localized: "LM Studio server not running at \(baseURL)")
                     ))
                 } catch {
                     continuation.finish(throwing: error)
@@ -98,12 +97,12 @@ struct OllamaProvider: TranslationProvider {
 
     @MainActor
     func makeSettingsView() -> AnyView {
-        AnyView(OllamaSettingsView(provider: self))
+        AnyView(LMStudioSettingsView(provider: self))
     }
 
-    /// Fetch available models from Ollama's native API.
+    /// Fetch available models from LM Studio's OpenAI-compatible `/models` endpoint.
     func fetchModels() async throws -> [String] {
-        guard let url = URL(string: "\(resolvedBaseURL)/api/tags") else {
+        guard let url = URL(string: "\(resolvedBaseURL)/models") else {
             throw TranslationError.invalidURL
         }
 
@@ -122,32 +121,32 @@ struct OllamaProvider: TranslationProvider {
             )
         }
 
-        let decoded = try JSONDecoder().decode(OllamaTagsResponse.self, from: data)
-        return decoded.models.map(\.name)
+        let decoded = try JSONDecoder().decode(OpenAIModelsResponse.self, from: data)
+        return decoded.data.map(\.id).sorted()
     }
 }
 
 // MARK: - Response Models
 
-private struct OllamaTagsResponse: Decodable {
-    let models: [Model]
+private struct OpenAIModelsResponse: Decodable {
+    let data: [Model]
 
     struct Model: Decodable {
-        let name: String
+        let id: String
     }
 }
 
 // MARK: - Settings View
 
-private struct OllamaSettingsView: View {
-    let provider: OllamaProvider
+private struct LMStudioSettingsView: View {
+    let provider: LMStudioProvider
 
     @State private var availableModels: [String] = []
     @State private var isFetchingModels = false
     @State private var serverStatus: ServerStatus = .unknown
     @State private var enabledModelsState: Set<String>
 
-    init(provider: OllamaProvider) {
+    init(provider: LMStudioProvider) {
         self.provider = provider
         self._enabledModelsState = State(initialValue: Defaults[provider.enabledModelsKey])
     }
@@ -175,7 +174,7 @@ private struct OllamaSettingsView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Base URL")
                         .font(.subheadline.bold())
-                    TextField("http://localhost:11434", text: baseURL)
+                    TextField("http://localhost:1234/v1", text: baseURL)
                         .textFieldStyle(.roundedBorder)
                 }
 
@@ -266,7 +265,7 @@ private struct OllamaSettingsView: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
 
-                    Text("Running multiple local models in parallel requires sufficient VRAM. Ollama may swap models causing increased latency.")
+                    Text("Running multiple local models in parallel requires sufficient VRAM. LM Studio may swap models causing increased latency.")
                         .font(.caption)
                         .foregroundStyle(.orange)
                 }
@@ -282,8 +281,8 @@ private struct OllamaSettingsView: View {
             }
 
             Section {
-                Link(destination: URL(string: "https://ollama.com")!) {
-                    Label("Download Ollama", systemImage: "arrow.up.right.square")
+                Link(destination: URL(string: "https://lmstudio.ai")!) {
+                    Label("Download LM Studio", systemImage: "arrow.up.right.square")
                 }
                 .font(.caption)
             }
@@ -328,7 +327,7 @@ private struct OllamaSettingsView: View {
     private func checkServer() async {
         serverStatus = .checking
         let trimmed = baseURL.wrappedValue.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
-        guard let pingURL = URL(string: "\(trimmed)/api/tags") else {
+        guard let pingURL = URL(string: "\(trimmed)/models") else {
             serverStatus = .notDetected
             return
         }

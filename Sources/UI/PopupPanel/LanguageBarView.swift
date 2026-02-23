@@ -8,6 +8,13 @@ struct LanguageBarView: View {
     var detectionConfidence: Double?
     @Binding var targetLanguage: String
     let onSwap: () -> Void
+    @Default(.popupFontSize) private var fontSize
+
+    private var pickerControlSize: ControlSize {
+        if fontSize <= 12 { .small }
+        else if fontSize <= 16 { .regular }
+        else { .large }
+    }
 
     var body: some View {
         HStack(spacing: 8) {
@@ -19,11 +26,12 @@ struct LanguageBarView: View {
                 }
             }
             .labelsHidden()
+            .controlSize(pickerControlSize)
             .frame(maxWidth: .infinity, alignment: .leading)
 
             Button(action: onSwap) {
                 Image(systemName: "arrow.left.arrow.right")
-                    .font(.caption)
+                    .font(.system(size: CGFloat(fontSize - 2)))
             }
             .buttonStyle(.plain)
             .foregroundStyle(.secondary)
@@ -35,6 +43,7 @@ struct LanguageBarView: View {
                 }
             }
             .labelsHidden()
+            .controlSize(pickerControlSize)
             .frame(maxWidth: .infinity, alignment: .trailing)
         }
         .padding(.horizontal, 4)
