@@ -7,6 +7,7 @@ struct PopupView: View {
     var onOpenSettings: (() -> Void)?
     @Environment(\.openSettings) private var openSettings
     @State private var editableText: String = ""
+    @State private var isOpeningSettings = false
     @State private var expandedProviders: Set<String> = []
     @State private var sourceLang: String = Defaults[.sourceLanguage]
     @State private var targetLang: String = Defaults[.targetLanguage]
@@ -127,9 +128,35 @@ struct PopupView: View {
                     )
 
                     Button {
-                        NSApp.activate()
-                        openSettings()
+                        guard !isOpeningSettings else { return }
+                        isOpeningSettings = true
+                        // LSUIElement (.accessory) apps cannot reliably activate from a
+                        // non-activating panel context. The sequence:
+                        // 1. Switch to .regular so WindowServer allows activation
+                        // 2. Capture openSettings before the view hierarchy is torn down
+                        // 3. Dismiss the popup (removes non-activating panel interference)
+                        // 4. Wait for policy change to propagate, then activate & open Settings
+                        // 5. Poll for the Settings window and force it to front
+                        if NSApp.activationPolicy() == .accessory {
+                            NSApp.setActivationPolicy(.regular)
+                        }
+                        let settingsAction = openSettings
                         onOpenSettings?()
+                        Task { @MainActor in
+                            try? await Task.sleep(for: .milliseconds(100))
+                            NSApp.activate()
+                            settingsAction()
+                            for _ in 0..<10 {
+                                try? await Task.sleep(for: .milliseconds(50))
+                                guard let w = NSApp.windows.first(where: {
+                                    !($0 is NSPanel) && $0.styleMask.contains(.titled) && $0.isVisible
+                                }) else { continue }
+                                w.makeKeyAndOrderFront(nil)
+                                NSApp.activate()
+                                break
+                            }
+                            isOpeningSettings = false
+                        }
                     } label: {
                         Image(systemName: "gearshape")
                             .font(.system(size: CGFloat(fontSize - 2)))

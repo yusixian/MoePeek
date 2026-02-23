@@ -36,5 +36,13 @@ struct SettingsView: View {
                 .tag(SettingsTab.about)
         }
         .frame(width: 680, height: tabHeight)
+        .onDisappear {
+            // Restore .accessory policy when the Settings window closes,
+            // reversing the temporary .regular switch from the popup gear button.
+            // Idempotent: no-op when policy is already .accessory or user has showInDock enabled.
+            if !Defaults[.showInDock] {
+                NSApp.setActivationPolicy(.accessory)
+            }
+        }
     }
 }
