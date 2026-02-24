@@ -1,3 +1,4 @@
+import AppKit
 import Defaults
 import KeyboardShortcuts
 import SwiftUI
@@ -5,6 +6,7 @@ import SwiftUI
 /// Content for the menu bar dropdown.
 struct MenuItemView: View {
     let appDelegate: AppDelegate
+    @Environment(\.openSettings) private var openSettings
 
     private var appVersion: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?"
@@ -76,7 +78,9 @@ struct MenuItemView: View {
         }
         .disabled(!appDelegate.updaterController.canCheckForUpdates)
 
-        SettingsLink {
+        Button {
+            openSettingsOrBringToFront()
+        } label: {
             Label("Settings...", systemImage: "gearshape")
         }
         .keyboardShortcut(",")
@@ -87,5 +91,14 @@ struct MenuItemView: View {
             NSApplication.shared.terminate(nil)
         }
         .keyboardShortcut("q")
+    }
+
+    @MainActor
+    private func openSettingsOrBringToFront() {
+        NSApp.activate(ignoringOtherApps: true)
+        let handled = NSApp.sendAction(Selector(("showPreferencesWindow:")), to: nil, from: nil)
+        if !handled {
+            openSettings()
+        }
     }
 }

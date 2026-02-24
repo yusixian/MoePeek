@@ -144,15 +144,16 @@ struct PopupView: View {
                         onOpenSettings?()
                         Task { @MainActor in
                             try? await Task.sleep(for: .milliseconds(100))
-                            NSApp.activate()
-                            settingsAction()
+                            openSettingsOrBringToFront {
+                                settingsAction()
+                            }
                             for _ in 0..<10 {
                                 try? await Task.sleep(for: .milliseconds(50))
                                 guard let w = NSApp.windows.first(where: {
                                     !($0 is NSPanel) && $0.styleMask.contains(.titled) && $0.isVisible
                                 }) else { continue }
                                 w.makeKeyAndOrderFront(nil)
-                                NSApp.activate()
+                                NSApp.activate(ignoringOtherApps: true)
                                 break
                             }
                             isOpeningSettings = false
@@ -222,6 +223,15 @@ struct PopupView: View {
                 }
             }
         )
+    }
+
+    @MainActor
+    private func openSettingsOrBringToFront(_ fallbackOpenSettings: () -> Void) {
+        NSApp.activate(ignoringOtherApps: true)
+        let handled = NSApp.sendAction(Selector(("showPreferencesWindow:")), to: nil, from: nil)
+        if !handled {
+            fallbackOpenSettings()
+        }
     }
 }
 
