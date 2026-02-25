@@ -139,7 +139,12 @@ private struct DeepLXSettingsView: View {
 
     private var baseURL: Binding<String> { Defaults.binding(provider.baseURLKey) }
     private var authToken: Binding<String> { Defaults.binding(provider.authTokenKey) }
-    private var endpoint: Binding<DeepLXProvider.Endpoint> { Defaults.binding(provider.endpointKey) }
+    private var endpoint: Binding<DeepLXProvider.Endpoint> {
+        Binding(
+            get: { Defaults[provider.endpointKey] },
+            set: { Defaults[provider.endpointKey] = $0 }
+        )
+    }
 
     var body: some View {
         Form {

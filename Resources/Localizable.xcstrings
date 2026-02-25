@@ -633,6 +633,7 @@
       }
     },
     "Free" : {
+      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1172,17 +1173,8 @@
         }
       }
     },
-    "Optional" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "可选"
-          }
-        }
-      }
-    },
     "Official" : {
+      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1210,16 +1202,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "引导设置..."
-          }
-        }
-      }
-    },
-    "Protects your self-hosted DeepLX server. Set via `--token` flag or `TOKEN` environment variable." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "保护您的自托管 DeepLX 服务器。通过 `--token` 标志或 `TOKEN` 环境变量设置。"
           }
         }
       }
@@ -1253,6 +1235,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "OpenAI 兼容 API，需要配置 API Key"
+          }
+        }
+      }
+    },
+    "Optional" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可选"
           }
         }
       }
@@ -1343,11 +1336,22 @@
       }
     },
     "Pro" : {
+      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "专业版"
+          }
+        }
+      }
+    },
+    "Protects your self-hosted DeepLX server. Set via `--token` flag or `TOKEN` environment variable." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保护您的自托管 DeepLX 服务器。通过 `--token` 标志或 `TOKEN` 环境变量设置。"
           }
         }
       }
@@ -1962,16 +1966,6 @@
         }
       }
     },
-    "Unknown DeepLX error" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未知 DeepLX 错误"
-          }
-        }
-      }
-    },
     "Unknown" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -1979,6 +1973,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未知"
+          }
+        }
+      }
+    },
+    "Unknown DeepLX error" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未知 DeepLX 错误"
           }
         }
       }
