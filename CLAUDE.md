@@ -50,6 +50,9 @@ User Action (shortcut / mouse selection / OCR)
 - **Coordinator pattern**: `TranslationCoordinator` owns all translation logic and exposes a single `State` enum consumed by views.
 - **Callback wiring in AppDelegate**: `AppDelegate.setupSelectionMonitor()` wires together SelectionMonitor → TriggerIconController → TranslationCoordinator → PopupPanelController via closures.
 - **3-tier text grabbing**: `AccessibilityGrabber` (AX API) → `AppleScriptGrabber` (Safari-specific) → `ClipboardGrabber` (⌘+C simulation). Each tier tried in order.
+- **NSViewRepresentable over TextEditor**: `TextEditor` has implicit insets; use custom `NSTextView` wrapper with `textContainerInset = .zero` / `lineFragmentPadding = 0` when precise spacing control is needed. See `SourceTextEditor`.
+- **Settings window activation**: `SettingsLink` is unreliable in LSUIElement / non-activating panel contexts. Use `NSApp.activate(ignoringOtherApps:)` → `sendAction("showPreferencesWindow:")` (private but stable selector) → fallback `openSettings()`.
+- **UI spacing constants**: PopupView uses `contentHorizontalPadding` for all edge insets; new subviews should reference it instead of hardcoding.
 - **@Observable and computed properties**: `@Observable` only tracks **stored properties**; computed property setters generate no observation notifications.
   - ❌ **Never** wrap "write to external state" logic as a computed property on an `@Observable` class and expose it as a SwiftUI binding — the classic symptom is a Toggle/Picker that appears frozen (the value is written, but the view never re-renders).
     - Broken: `var foo: Bool { get { ext.foo } set { ext.foo = newValue } }`
@@ -113,6 +116,10 @@ Use the following specialized skills when reviewing code changes:
 - **swiftui-ui-patterns** — UI pattern design, page structure, component composition
 
 Note this project uses a SwiftUI + AppKit hybrid architecture: SwiftUI handles view content (Settings, Onboarding, PopupView), while AppKit NSPanel/NSWindow manages window lifecycle and non-activating floating panels. Reviews must consider the interaction boundary between both.
+
+### Known Private API Usage
+
+- **`showPreferencesWindow:`** — Private `NSApplication` selector used to bring existing Settings window to front; has `openSettings()` fallback. Monitor on major macOS updates.
 
 ### Memory Leak Prevention
 
