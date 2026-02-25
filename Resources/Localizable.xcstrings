@@ -120,6 +120,9 @@
         }
       }
     },
+    "Anthropic API requires max_tokens. Default: 4096." : {
+
+    },
     "API Configuration" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -972,6 +975,9 @@
           }
         }
       }
+    },
+    "Max Tokens" : {
+
     },
     "Menu Bar Translation Tool" : {
       "localizations" : {

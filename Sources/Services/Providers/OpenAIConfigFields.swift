@@ -10,10 +10,8 @@ struct OpenAIConfigFields: View {
     @State private var connectionManager: OpenAIConnectionManager
     @State private var baseURLText: String
     @State private var apiKeyText: String
-    @State private var customModelInput: String
     @State private var modelText: String
     @State private var enabledModelsState: Set<String>
-    @State private var modelSearchQuery: String = ""
     private let metaService = ModelMetadataService.shared
 
     init(provider: OpenAICompatibleProvider, compact: Bool = false) {
@@ -22,7 +20,6 @@ struct OpenAIConfigFields: View {
         self._connectionManager = State(initialValue: OpenAIConnectionManager())
         self._baseURLText = State(initialValue: Defaults[provider.baseURLKey])
         self._apiKeyText = State(initialValue: Defaults[provider.apiKeyKey])
-        self._customModelInput = State(initialValue: "")
         self._modelText = State(initialValue: Defaults[provider.modelKey])
         self._enabledModelsState = State(initialValue: Defaults[provider.enabledModelsKey])
     }
@@ -59,21 +56,6 @@ struct OpenAIConfigFields: View {
                 || lower.contains("moderation")
             return !excluded
         }
-    }
-
-    /// All model IDs to display: fetched (filtered) + enabled but not in fetch list.
-    private var displayModels: [String] {
-        let fetched = Set(filteredModels)
-        let enabled = enabledModels.wrappedValue
-        let unknown = enabled.subtracting(fetched).sorted()
-        return filteredModels + unknown
-    }
-
-    /// Models filtered by search query for display in the parallel models list.
-    private var searchFilteredModels: [String] {
-        let query = modelSearchQuery.trimmingCharacters(in: .whitespaces).lowercased()
-        guard !query.isEmpty else { return displayModels }
-        return displayModels.filter { $0.lowercased().contains(query) }
     }
 
     var body: some View {
@@ -130,86 +112,13 @@ struct OpenAIConfigFields: View {
                         Text("Parallel Models")
                             .font(.subheadline.bold())
                         Spacer()
-                        if !enabledModels.wrappedValue.isEmpty {
-                            Button("Clear All") {
-                                enabledModels.wrappedValue = []
-                            }
-                            .font(.caption)
-                            .buttonStyle(.borderless)
-                        }
                     }
 
-                    Text("Select models to run in parallel during translation.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-
-                    if !displayModels.isEmpty {
-                        TextField("Search models…", text: $modelSearchQuery)
-                            .textFieldStyle(.roundedBorder)
-                    }
-
-                    if displayModels.isEmpty {
-                        Text("Click the refresh button above to fetch available models, or add a custom model below.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .padding(.vertical, 4)
-                    } else {
-                        if searchFilteredModels.isEmpty && !modelSearchQuery.trimmingCharacters(in: .whitespaces).isEmpty {
-                            Text("No models match your search.")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                                .padding(.vertical, 8)
-                        } else {
-                            ScrollView {
-                                VStack(alignment: .leading, spacing: 2) {
-                                    ForEach(searchFilteredModels, id: \.self) { modelID in
-                                        ModelCheckboxRow(
-                                            modelID: modelID,
-                                            isEnabled: enabledModels.wrappedValue.contains(modelID),
-                                            isUnknown: !filteredModels.contains(modelID),
-                                            isDisabled: !enabledModels.wrappedValue.contains(modelID) && enabledModels.wrappedValue.count >= maxParallelModels,
-                                            metaMatch: metaService.meta(for: modelID),
-                                            onToggle: { toggleModel(modelID) }
-                                        )
-                                    }
-                                }
-                            }
-                            .frame(maxHeight: 160)
-                        }
-                    }
-
-                    // Add custom model
-                    HStack(spacing: 4) {
-                        TextField("Add custom model…", text: $customModelInput)
-                            .textFieldStyle(.roundedBorder)
-                            .onSubmit { addCustomModel() }
-
-                        Button {
-                            addCustomModel()
-                        } label: {
-                            Image(systemName: "plus.circle")
-                        }
-                        .buttonStyle(.borderless)
-                        .disabled(customModelInput.trimmingCharacters(in: .whitespaces).isEmpty || enabledModels.wrappedValue.count >= maxParallelModels)
-                    }
-
-                    let count = enabledModels.wrappedValue.count
-                    if count > 0 {
-                        Text("\(count) model(s) enabled — will run in parallel during translation.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    if metaService.hasFetched, let modelsDevURL = URL(string: "https://models.dev") {
-                        HStack(spacing: 4) {
-                            Text("Capability data from")
-                                .font(.caption2)
-                                .foregroundStyle(.tertiary)
-                            Link("Models.dev", destination: modelsDevURL)
-                                .font(.caption2)
-                                .foregroundStyle(.tertiary)
-                        }
-                    }
+                    ParallelModelsList(
+                        fetchedModels: filteredModels,
+                        enabledModels: enabledModels,
+                        metaService: metaService
+                    )
                 }
             }
 
@@ -259,23 +168,6 @@ struct OpenAIConfigFields: View {
         }
     }
 
-    private func toggleModel(_ modelID: String) {
-        var current = enabledModels.wrappedValue
-        if current.contains(modelID) {
-            current.remove(modelID)
-        } else {
-            guard current.count < maxParallelModels else { return }
-            current.insert(modelID)
-        }
-        enabledModels.wrappedValue = current
-    }
-
-    private func addCustomModel() {
-        let trimmed = customModelInput.trimmingCharacters(in: .whitespaces)
-        guard !trimmed.isEmpty, enabledModels.wrappedValue.count < maxParallelModels else { return }
-        enabledModels.wrappedValue.insert(trimmed)
-        customModelInput = ""
-    }
 }
 
 // MARK: - Model Checkbox Row

@@ -128,6 +128,7 @@ final class TranslationProviderRegistry {
                     "X-OpenRouter-Title": "MoePeek",
                 ]
             ),
+            AnthropicProvider(),
             OllamaProvider(),
             LMStudioProvider(),
         ]

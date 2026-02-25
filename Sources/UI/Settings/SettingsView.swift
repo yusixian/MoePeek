@@ -35,7 +35,7 @@ struct SettingsView: View {
                 }
                 .tag(SettingsTab.about)
         }
-        .frame(width: 680, height: tabHeight)
+        .frame(minWidth: 720, idealWidth: 720, minHeight: tabHeight, idealHeight: tabHeight)
         .onDisappear {
             // Restore .accessory policy when the Settings window closes,
             // reversing the temporary .regular switch from the popup gear button.
