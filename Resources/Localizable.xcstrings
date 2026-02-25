@@ -1044,6 +1044,16 @@
         }
       }
     },
+    "No models match your search." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有匹配的模型。"
+          }
+        }
+      }
+    },
     "No Preference" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -1480,6 +1490,16 @@
     },
     "Secret Key" : {
 
+    },
+    "Search models…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "搜索模型…"
+          }
+        }
+      }
     },
     "Select a model" : {
       "localizations" : {
