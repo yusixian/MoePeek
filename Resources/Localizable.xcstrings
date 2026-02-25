@@ -633,7 +633,6 @@
       }
     },
     "Free" : {
-      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1184,7 +1183,6 @@
       }
     },
     "Official" : {
-      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1345,7 +1343,6 @@
       }
     },
     "Pro" : {
-      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1961,6 +1958,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "翻译会话意外结束。请重试。"
+          }
+        }
+      }
+    },
+    "Unknown DeepLX error" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未知 DeepLX 错误"
           }
         }
       }

@@ -63,8 +63,8 @@ struct DeepLXProvider: TranslationProvider {
         var trimmed = rawURL
         // Strip trailing slashes
         while trimmed.hasSuffix("/") { trimmed = String(trimmed.dropLast()) }
-        // Strip endpoint path if user accidentally included it
-        for ep in Endpoint.allCases where trimmed.hasSuffix(ep.path) {
+        // Strip endpoint path if user accidentally included it (sort by length descending to avoid partial matches)
+        if let ep = Endpoint.allCases.sorted(by: { $0.path.count > $1.path.count }).first(where: { trimmed.hasSuffix($0.path) }) {
             trimmed = String(trimmed.dropLast(ep.path.count))
         }
         while trimmed.hasSuffix("/") { trimmed = String(trimmed.dropLast()) }
@@ -113,7 +113,7 @@ struct DeepLXProvider: TranslationProvider {
         guard decoded.code == 200 else {
             throw TranslationError.apiError(
                 statusCode: decoded.code,
-                message: decoded.message ?? decoded.data ?? "Unknown DeepLX error"
+                message: decoded.message ?? decoded.data ?? String(localized: "Unknown DeepLX error")
             )
         }
 
