@@ -122,7 +122,10 @@ final class TranslationProviderRegistry {
                 defaultBaseURL: "https://openrouter.ai/api/v1",
                 defaultModel: "openrouter/auto",
                 guideURL: "https://openrouter.ai/keys",
-                extraHeaders: ["X-Title": "MoePeek", "X-OpenRouter-Title": "MoePeek"]
+                extraHeaders: [
+                    "HTTP-Referer": "https://github.com/cosZone/MoePeek",
+                    "X-OpenRouter-Title": "MoePeek",
+                ]
             ),
             OllamaProvider(),
             LMStudioProvider(),
