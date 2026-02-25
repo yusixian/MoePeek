@@ -38,9 +38,12 @@
 | Free | API | LLM | System |
 |------|-----|-----|--------|
 | Google Translate | DeepL | OpenAI | Apple Translation |
-| Bing Translate | Baidu | DeepSeek | *(macOS 15+, on-device)* |
-| Youdao Translate | NiuTrans | 智谱 GLM | |
-| | Caiyun | Ollama (local) | |
+| Bing Translate | Baidu | Anthropic | *(macOS 15+, on-device)* |
+| Youdao Translate | NiuTrans | DeepSeek | |
+| | Caiyun | OpenRouter | |
+| | DeepLX | 智谱 GLM | |
+| | | Ollama (local) | |
+| | | LM Studio (local) | |
 
 **And More**
 

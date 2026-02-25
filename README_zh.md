@@ -39,9 +39,12 @@
 | 免费 | API | LLM | 系统 |
 |------|-----|-----|------|
 | Google 翻译 | DeepL | OpenAI | Apple 翻译 |
-| Bing 翻译 | 百度翻译 | DeepSeek | *（macOS 15+，离线可用）* |
-| 有道翻译 | 小牛翻译 | 智谱 GLM | |
-| | 彩云小译 | Ollama（本地） | |
+| Bing 翻译 | 百度翻译 | Anthropic | *（macOS 15+，离线可用）* |
+| 有道翻译 | 小牛翻译 | DeepSeek | |
+| | 彩云小译 | OpenRouter | |
+| | DeepLX | 智谱 GLM | |
+| | | Ollama（本地） | |
+| | | LM Studio（本地） | |
 
 **更多特性**
 
