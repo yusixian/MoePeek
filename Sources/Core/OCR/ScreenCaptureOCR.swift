@@ -12,7 +12,7 @@ enum ScreenCaptureOCR {
         }
     }
     /// Launch interactive screen capture, OCR the captured image, and return recognized text.
-    static func captureAndRecognize() async throws -> String {
+    @MainActor static func captureAndRecognize() async throws -> String {
         // Run screencapture -i -c (interactive selection → clipboard)
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/sbin/screencapture")

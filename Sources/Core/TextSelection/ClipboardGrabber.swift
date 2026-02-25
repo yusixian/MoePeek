@@ -8,7 +8,7 @@ enum ClipboardGrabber {
 
     /// Grab selected text by simulating ⌘+C and reading the clipboard.
     /// Saves and restores the previous clipboard content.
-    static func grabViaClipboard() async -> String? {
+    @MainActor static func grabViaClipboard() async -> String? {
         guard isGrabbing.withLock({ val in
             if val { return false }
             val = true
