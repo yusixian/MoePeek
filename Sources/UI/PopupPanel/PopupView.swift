@@ -37,7 +37,7 @@ struct PopupView: View {
                         .foregroundStyle(.secondary)
                 }
                 .padding(.horizontal, contentHorizontalPadding)
-                .padding(.vertical, 14)
+                .padding(.vertical, contentHorizontalPadding)
 
             case .active:
                 activeContent
@@ -90,7 +90,7 @@ struct PopupView: View {
                         .foregroundStyle(.red)
                 }
                 .padding(.horizontal, contentHorizontalPadding)
-                .padding(.vertical, 14)
+                .padding(.vertical, contentHorizontalPadding)
             } else {
                 // Source input
                 SourceInputView(
@@ -101,7 +101,7 @@ struct PopupView: View {
                 )
                 .frame(height: inputHeight)
                 .padding(.horizontal, contentHorizontalPadding)
-                .padding(.top, 20)
+                .padding(.top, contentHorizontalPadding)
                 .padding(.bottom, 4)
 
                 DraggableDividerView(
@@ -211,6 +211,7 @@ struct PopupView: View {
                 }
             }
         }
+        .padding(.bottom, contentHorizontalPadding)
     }
 
     // MARK: - Helpers
