@@ -19,24 +19,24 @@ struct AddCustomProviderSheet: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Text("Add Custom Provider")
+            Text(String(localized: "Add Custom Provider"))
                 .font(.headline)
                 .padding(.top, 20)
                 .padding(.bottom, 4)
 
             Form {
-                TextField("Name:", text: $name, prompt: Text(verbatim: "My API"))
-                TextField("Base URL:", text: $baseURL, prompt: Text(verbatim: "https://api.example.com/v1"))
-                TextField("Default Model:", text: $defaultModel, prompt: Text(verbatim: "gpt-4o-mini"))
-                SecureField("API Key:", text: $apiKey, prompt: Text(verbatim: "sk-... (Optional)"))
+                TextField(String(localized: "Name:"), text: $name, prompt: Text(String(localized: "My API")))
+                TextField(String(localized: "Base URL:"), text: $baseURL, prompt: Text(verbatim: "https://api.example.com/v1"))
+                TextField(String(localized: "Default Model:"), text: $defaultModel, prompt: Text(verbatim: "gpt-4o-mini"))
+                SecureField(String(localized: "API Key:"), text: $apiKey, prompt: Text(String(localized: "sk-... (Optional)")))
             }
             .formStyle(.grouped)
 
             HStack {
                 Spacer()
-                Button("Cancel") { dismiss() }
+                Button(String(localized: "Cancel")) { dismiss() }
                     .keyboardShortcut(.cancelAction)
-                Button("Add") { addProvider() }
+                Button(String(localized: "Add")) { addProvider() }
                     .keyboardShortcut(.defaultAction)
                     .disabled(!isValid)
             }
