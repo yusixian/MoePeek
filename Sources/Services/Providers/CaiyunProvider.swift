@@ -108,11 +108,13 @@ private struct CaiyunSettingsView: View {
     var body: some View {
         Form {
             Section("API Configuration") {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Token")
-                        .font(.subheadline.bold())
-                    SecureField("Enter Caiyun Token", text: token)
-                        .textFieldStyle(.roundedBorder)
+                VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Token")
+                            .font(.subheadline.bold())
+                        SecureField("Enter Caiyun Token", text: token)
+                            .textFieldStyle(.roundedBorder)
+                    }
                 }
             }
 

@@ -12,7 +12,8 @@ struct LocalLLMSettingsConfig {
 }
 
 /// Shared settings view for local LLM providers (LM Studio, Ollama).
-/// Parameterized via `LocalLLMSettingsConfig` to handle the small differences between providers.
+/// Renders the Anthropic-style Form layout with separate sections for API config,
+/// parallel models, system prompt, and a download link.
 struct LocalLLMSettingsView: View {
     let config: LocalLLMSettingsConfig
     let baseURLKey: Defaults.Key<String>
@@ -23,9 +24,17 @@ struct LocalLLMSettingsView: View {
 
     @State private var availableModels: [String] = []
     @State private var isFetchingModels = false
-    @State private var serverStatus: ServerStatus = .unknown
+    @State private var isTestingConnection = false
+    @State private var testResult: ConnectionTestResult?
+    @State private var baseURLText: String
+    @State private var modelText: String
     @State private var enabledModelsState: Set<String>
-    @State private var modelSearchQuery: String = ""
+    private let metaService = ModelMetadataService.shared
+
+    private enum ConnectionTestResult {
+        case success(latencyMs: Int)
+        case failure(message: String)
+    }
 
     init(
         config: LocalLLMSettingsConfig,
@@ -41,12 +50,20 @@ struct LocalLLMSettingsView: View {
         self.enabledModelsKey = enabledModelsKey
         self.systemPromptKey = systemPromptKey
         self.fetchModelsFromProvider = fetchModels
+        self._baseURLText = State(initialValue: Defaults[baseURLKey])
+        self._modelText = State(initialValue: Defaults[modelKey])
         self._enabledModelsState = State(initialValue: Defaults[enabledModelsKey])
     }
 
-    private var baseURL: Binding<String> { Defaults.binding(baseURLKey) }
-    private var model: Binding<String> { Defaults.binding(modelKey) }
-    private var systemPrompt: Binding<String> { Defaults.binding(systemPromptKey) }
+    private var model: Binding<String> {
+        Binding(
+            get: { modelText },
+            set: {
+                modelText = $0
+                Defaults[modelKey] = $0
+            }
+        )
+    }
     private var enabledModels: Binding<Set<String>> {
         Binding(
             get: { enabledModelsState },
@@ -57,122 +74,21 @@ struct LocalLLMSettingsView: View {
         )
     }
 
-    private enum ServerStatus {
-        case unknown, checking, running, notDetected
-    }
-
     var body: some View {
         Form {
-            Section("Server") {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Base URL")
-                        .font(.subheadline.bold())
-                    TextField(config.baseURLPlaceholder, text: baseURL)
-                        .textFieldStyle(.roundedBorder)
-                }
-
-                HStack(spacing: 8) {
-                    statusIndicator
-                    Spacer()
-                    Button("Check Connection") {
-                        Task { await checkServer() }
-                    }
-                    .controlSize(.small)
-                }
-            }
-
-            Section("Default Model") {
-                HStack(spacing: 4) {
-                    if availableModels.isEmpty {
-                        TextField("Model name", text: model)
-                            .textFieldStyle(.roundedBorder)
-                    } else {
-                        Picker("", selection: model) {
-                            Text("Select a model").tag("")
-                            ForEach(availableModels, id: \.self) { name in
-                                Text(name).tag(name)
-                            }
-                        }
-                        .labelsHidden()
-                    }
-
-                    Button {
-                        Task { await fetchModels() }
-                    } label: {
-                        if isFetchingModels {
-                            ProgressView()
-                                .controlSize(.small)
-                        } else {
-                            Image(systemName: "arrow.clockwise")
-                        }
-                    }
-                    .disabled(isFetchingModels)
-                }
-
-                if !availableModels.isEmpty {
-                    if enabledModels.wrappedValue.isEmpty {
-                        Text("Used when no models are selected below.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
+            Section("API Configuration") {
+                apiConfigurationSection
             }
 
             Section("Parallel Models") {
-                Text("Select models to run in parallel during translation (max \(maxParallelModels)).")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                ParallelModelsList(
+                    fetchedModels: availableModels,
+                    enabledModels: enabledModels,
+                    metaService: metaService,
+                    defaultModel: modelText
+                )
 
-                let persistedUnknown = enabledModels.wrappedValue.subtracting(Set(availableModels)).sorted()
-                let allModels = availableModels + persistedUnknown
-
-                if allModels.isEmpty {
-                    Text("Click the refresh button above to fetch available models.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .padding(.vertical, 4)
-                } else {
-                    TextField("Search models…", text: $modelSearchQuery)
-                        .textFieldStyle(.roundedBorder)
-
-                    let query = modelSearchQuery.trimmingCharacters(in: .whitespaces).lowercased()
-                    let filteredAvailable = query.isEmpty ? availableModels : availableModels.filter { $0.lowercased().contains(query) }
-                    let filteredUnknown = query.isEmpty ? persistedUnknown : persistedUnknown.filter { $0.lowercased().contains(query) }
-
-                    if filteredAvailable.isEmpty && filteredUnknown.isEmpty && !query.isEmpty {
-                        Text("No models match your search.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .padding(.vertical, 8)
-                    } else {
-                        ForEach(filteredAvailable, id: \.self) { modelID in
-                            ModelCheckboxRow(
-                                modelID: modelID,
-                                isEnabled: enabledModels.wrappedValue.contains(modelID),
-                                isUnknown: false,
-                                isDisabled: !enabledModels.wrappedValue.contains(modelID) && enabledModels.wrappedValue.count >= maxParallelModels,
-                                onToggle: { toggleModel(modelID) }
-                            )
-                        }
-
-                        ForEach(filteredUnknown, id: \.self) { modelID in
-                            ModelCheckboxRow(
-                                modelID: modelID,
-                                isEnabled: true,
-                                isUnknown: true,
-                                isDisabled: false,
-                                onToggle: { toggleModel(modelID) }
-                            )
-                        }
-                    }
-                }
-
-                let count = enabledModels.wrappedValue.count
-                if count > 0 {
-                    Text("\(count) model(s) enabled — will run in parallel during translation.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-
+                if !enabledModels.wrappedValue.isEmpty {
                     Text("Running multiple local models in parallel requires sufficient VRAM. \(config.providerName) may swap models causing increased latency.")
                         .font(.caption)
                         .foregroundStyle(.orange)
@@ -180,7 +96,7 @@ struct LocalLLMSettingsView: View {
             }
 
             Section("System Prompt") {
-                TextEditor(text: systemPrompt)
+                TextEditor(text: Defaults.binding(systemPromptKey))
                     .font(.system(.body, design: .monospaced))
                     .frame(height: 80)
                 Text("Use {targetLang} as a placeholder for the target language.")
@@ -198,60 +114,146 @@ struct LocalLLMSettingsView: View {
             }
         }
         .formStyle(.grouped)
+        .onChange(of: baseURLText) { _, newValue in
+            Defaults[baseURLKey] = newValue
+            availableModels = []
+            testResult = nil
+        }
+        .onReceive(Defaults.publisher(baseURLKey).map(\.newValue)) { newValue in
+            if baseURLText != newValue { baseURLText = newValue }
+        }
+        .onReceive(Defaults.publisher(modelKey).map(\.newValue)) { newValue in
+            if modelText != newValue { modelText = newValue }
+        }
+        .onReceive(Defaults.publisher(enabledModelsKey).map(\.newValue)) { newValue in
+            if enabledModelsState != newValue { enabledModelsState = newValue }
+        }
         .task {
-            await checkServer()
-            if serverStatus == .running, availableModels.isEmpty {
+            if availableModels.isEmpty, !baseURLText.isEmpty {
                 await fetchModels(silent: true)
             }
+            await metaService.fetchIfNeeded()
         }
-        .onChange(of: baseURL.wrappedValue) { _, _ in
-            serverStatus = .unknown
-            availableModels = []
+    }
+
+    // MARK: - Sections
+
+    @ViewBuilder
+    private var apiConfigurationSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Base URL")
+                    .font(.subheadline.bold())
+                TextField(config.baseURLPlaceholder, text: $baseURLText)
+                    .textFieldStyle(.roundedBorder)
+            }
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Default Model")
+                    .font(.subheadline.bold())
+                HStack(spacing: 4) {
+                    TextField("Model name", text: model)
+                        .textFieldStyle(.roundedBorder)
+                    localModelFetchAccessory
+                }
+                if enabledModels.wrappedValue.isEmpty {
+                    Text("Used when no models are selected below.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            HStack(spacing: 8) {
+                Button {
+                    Task { await testConnection() }
+                } label: {
+                    Label("Test Connection", systemImage: "bolt.horizontal")
+                }
+                .disabled(baseURLText.isEmpty || isTestingConnection)
+
+                if isTestingConnection {
+                    ProgressView()
+                        .controlSize(.small)
+                }
+
+                if let result = testResult {
+                    switch result {
+                    case .success(let latencyMs):
+                        Label("Connection successful (\(latencyMs)ms)", systemImage: "checkmark.circle.fill")
+                            .foregroundStyle(.green)
+                            .font(.caption)
+                    case .failure(let message):
+                        Label(message, systemImage: "xmark.circle.fill")
+                            .foregroundStyle(.red)
+                            .font(.caption)
+                            .lineLimit(2)
+                    }
+                }
+            }
         }
     }
 
     @ViewBuilder
-    private var statusIndicator: some View {
-        switch serverStatus {
-        case .unknown:
-            Label("Not checked", systemImage: "questionmark.circle")
-                .font(.callout)
-                .foregroundStyle(.secondary)
-        case .checking:
-            HStack(spacing: 4) {
-                ProgressView().controlSize(.small)
-                Text("Checking…").font(.callout).foregroundStyle(.secondary)
+    private var localModelFetchAccessory: some View {
+        if isFetchingModels {
+            ProgressView()
+                .controlSize(.small)
+        } else if !availableModels.isEmpty {
+            HStack(spacing: 2) {
+                Menu {
+                    ForEach(availableModels, id: \.self) { id in
+                        Button(id) { model.wrappedValue = id }
+                    }
+                } label: {
+                    Image(systemName: "chevron.down.circle")
+                }
+                .menuStyle(.borderlessButton)
+                .fixedSize()
+
+                Button {
+                    Task { await fetchModels() }
+                } label: {
+                    Image(systemName: "arrow.clockwise.circle")
+                }
+                .buttonStyle(.borderless)
+                .help("Refresh model list")
             }
-        case .running:
-            Label("Running", systemImage: "checkmark.circle.fill")
-                .font(.callout)
-                .foregroundStyle(.green)
-        case .notDetected:
-            Label("Not detected", systemImage: "xmark.circle.fill")
-                .font(.callout)
-                .foregroundStyle(.red)
+        } else {
+            Button {
+                Task { await fetchModels() }
+            } label: {
+                Image(systemName: "arrow.clockwise.circle")
+            }
+            .buttonStyle(.borderless)
+            .disabled(baseURLText.isEmpty)
+            .help("Fetch available models")
         }
     }
 
+    // MARK: - Actions
+
     @MainActor
-    private func checkServer() async {
-        serverStatus = .checking
-        let trimmed = baseURL.wrappedValue.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+    private func testConnection() async {
+        isTestingConnection = true
+        defer { isTestingConnection = false }
+        let trimmed = baseURLText.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
         guard let pingURL = URL(string: "\(trimmed)\(config.serverCheckPath)") else {
-            serverStatus = .notDetected
+            testResult = .failure(message: "Invalid URL")
             return
         }
         var request = URLRequest(url: pingURL)
         request.timeoutInterval = 3
+        let start = CFAbsoluteTimeGetCurrent()
         do {
             let (_, response) = try await translationURLSession.data(for: request)
+            let elapsed = Int((CFAbsoluteTimeGetCurrent() - start) * 1000)
             if let http = response as? HTTPURLResponse, http.statusCode == 200 {
-                serverStatus = .running
+                testResult = .success(latencyMs: elapsed)
             } else {
-                serverStatus = .notDetected
+                testResult = .failure(message: "Server returned non-200 status")
             }
         } catch {
-            serverStatus = .notDetected
+            testResult = .failure(message: error.localizedDescription)
         }
     }
 
@@ -261,23 +263,11 @@ struct LocalLLMSettingsView: View {
         defer { isFetchingModels = false }
         do {
             availableModels = try await fetchModelsFromProvider()
-            if !availableModels.isEmpty, model.wrappedValue.isEmpty {
+            if !availableModels.isEmpty, modelText.isEmpty {
                 model.wrappedValue = availableModels[0]
             }
-            serverStatus = .running
         } catch {
-            if !silent { serverStatus = .notDetected }
+            if !silent { testResult = .failure(message: error.localizedDescription) }
         }
-    }
-
-    private func toggleModel(_ modelID: String) {
-        var current = enabledModels.wrappedValue
-        if current.contains(modelID) {
-            current.remove(modelID)
-        } else {
-            guard current.count < maxParallelModels else { return }
-            current.insert(modelID)
-        }
-        enabledModels.wrappedValue = current
     }
 }

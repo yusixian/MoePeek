@@ -108,17 +108,19 @@ private struct DeepLSettingsView: View {
     var body: some View {
         Form {
             Section("API Configuration") {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("API Key")
-                        .font(.subheadline.bold())
-                    SecureField("xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:fx", text: apiKey)
-                        .textFieldStyle(.roundedBorder)
-                }
+                VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("API Key")
+                            .font(.subheadline.bold())
+                        SecureField("xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:fx", text: apiKey)
+                            .textFieldStyle(.roundedBorder)
+                    }
 
-                if !planLabel.isEmpty {
-                    Label("Plan: \(planLabel)", systemImage: "checkmark.seal.fill")
-                        .font(.callout)
-                        .foregroundStyle(apiKey.wrappedValue.hasSuffix(":fx") ? .blue : .purple)
+                    if !planLabel.isEmpty {
+                        Label("Plan: \(planLabel)", systemImage: "checkmark.seal.fill")
+                            .font(.callout)
+                            .foregroundStyle(apiKey.wrappedValue.hasSuffix(":fx") ? .blue : .purple)
+                    }
                 }
             }
 

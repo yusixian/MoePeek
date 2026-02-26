@@ -149,53 +149,55 @@ private struct DeepLXSettingsView: View {
     var body: some View {
         Form {
             Section("API Configuration") {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Server URL")
-                        .font(.subheadline.bold())
-                    TextField("https://api.deeplx.org/your-api-key", text: baseURL)
-                        .textFieldStyle(.roundedBorder)
-                    Text("For api.deeplx.org, include your API key in the URL.\nFor self-hosted: `http://localhost:1188`\nDo not include /translate path suffix.")
+                VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Server URL")
+                            .font(.subheadline.bold())
+                        TextField("https://api.deeplx.org/your-api-key", text: baseURL)
+                            .textFieldStyle(.roundedBorder)
+                        Text("For api.deeplx.org, include your API key in the URL.\nFor self-hosted: `http://localhost:1188`\nDo not include /translate path suffix.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Endpoint")
+                            .font(.subheadline.bold())
+                        Picker("Endpoint", selection: endpoint) {
+                            ForEach(DeepLXProvider.Endpoint.allCases, id: \.self) { ep in
+                                Text(ep.displayName).tag(ep)
+                            }
+                        }
+                        .pickerStyle(.segmented)
+                        .labelsHidden()
+
+                        Text(endpoint.wrappedValue.path)
+                            .font(.caption.monospaced())
+                            .foregroundStyle(.tertiary)
+
+                        Group {
+                            switch endpoint.wrappedValue {
+                            case .free:
+                                Text("Simulates DeepL iOS client. No authentication required. Rate limits (HTTP 429) may apply.")
+                            case .pro:
+                                Text("Uses DeepL Pro session. Requires `dl_session` cookie configured on the DeepLX server.")
+                            case .official:
+                                Text("Uses DeepL official API (`/v2`). Requires `authKey` configured on the DeepLX server.")
+                            }
+                        }
                         .font(.caption)
                         .foregroundStyle(.secondary)
-                }
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Endpoint")
-                        .font(.subheadline.bold())
-                    Picker("Endpoint", selection: endpoint) {
-                        ForEach(DeepLXProvider.Endpoint.allCases, id: \.self) { ep in
-                            Text(ep.displayName).tag(ep)
-                        }
                     }
-                    .pickerStyle(.segmented)
-                    .labelsHidden()
 
-                    Text(endpoint.wrappedValue.path)
-                        .font(.caption.monospaced())
-                        .foregroundStyle(.tertiary)
-
-                    Group {
-                        switch endpoint.wrappedValue {
-                        case .free:
-                            Text("Simulates DeepL iOS client. No authentication required. Rate limits (HTTP 429) may apply.")
-                        case .pro:
-                            Text("Uses DeepL Pro session. Requires `dl_session` cookie configured on the DeepLX server.")
-                        case .official:
-                            Text("Uses DeepL official API (`/v2`). Requires `authKey` configured on the DeepLX server.")
-                        }
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Access Token")
+                            .font(.subheadline.bold())
+                        SecureField("Optional", text: authToken)
+                            .textFieldStyle(.roundedBorder)
+                        Text("Protects your self-hosted DeepLX server. Set via `--token` flag or `TOKEN` environment variable.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
                     }
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                }
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Access Token")
-                        .font(.subheadline.bold())
-                    SecureField("Optional", text: authToken)
-                        .textFieldStyle(.roundedBorder)
-                    Text("Protects your self-hosted DeepLX server. Set via `--token` flag or `TOKEN` environment variable.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
                 }
             }
 

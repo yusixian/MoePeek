@@ -1,8 +1,10 @@
 import Defaults
 import SwiftUI
 
-/// Reusable OpenAI-compatible API configuration fields with model fetching and connection testing.
-/// Binds directly to Defaults keys so values update immediately when switching providers.
+/// Reusable OpenAI-compatible provider settings.
+/// - `compact: false` (default): renders the full Anthropic-style Form with separate sections
+///   for API config, parallel models, system prompt, and an optional external link.
+/// - `compact: true`: renders only the API configuration fields VStack (used in onboarding).
 struct OpenAIConfigFields: View {
     let provider: OpenAICompatibleProvider
     var compact: Bool = false
@@ -59,8 +61,50 @@ struct OpenAIConfigFields: View {
     }
 
     var body: some View {
+        if compact {
+            apiConfigurationSection
+        } else {
+            Form {
+                Section("API Configuration") {
+                    apiConfigurationSection
+                }
+
+                Section("Parallel Models") {
+                    ParallelModelsList(
+                        fetchedModels: filteredModels,
+                        enabledModels: enabledModels,
+                        metaService: metaService,
+                        defaultModel: modelText
+                    )
+                }
+
+                Section("System Prompt") {
+                    TextEditor(text: Defaults.binding(provider.systemPromptKey))
+                        .font(.system(.body, design: .monospaced))
+                        .frame(height: 80)
+                    Text("Use {targetLang} as a placeholder for the target language.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                if let urlString = provider.guideURL, let url = URL(string: urlString) {
+                    Section {
+                        Link(destination: url) {
+                            Label("Get API Key from \(provider.displayName)", systemImage: "arrow.up.right.square")
+                        }
+                        .font(.caption)
+                    }
+                }
+            }
+            .formStyle(.grouped)
+        }
+    }
+
+    // MARK: - Sections
+
+    @ViewBuilder
+    private var apiConfigurationSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            // Base URL
             VStack(alignment: .leading, spacing: 4) {
                 Text("Base URL")
                     .font(.subheadline.bold())
@@ -68,7 +112,6 @@ struct OpenAIConfigFields: View {
                     .textFieldStyle(.roundedBorder)
             }
 
-            // API Key
             VStack(alignment: .leading, spacing: 4) {
                 Text("API Key")
                     .font(.subheadline.bold())
@@ -76,7 +119,6 @@ struct OpenAIConfigFields: View {
                     .textFieldStyle(.roundedBorder)
             }
 
-            // Default Model (fallback when no multi-model enabled)
             VStack(alignment: .leading, spacing: 4) {
                 Text("Default Model")
                     .font(.subheadline.bold())
@@ -97,29 +139,11 @@ struct OpenAIConfigFields: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
-            }
-
-            if let error = connectionManager.modelFetchError {
-                Text(error)
-                    .font(.caption)
-                    .foregroundStyle(.red)
-            }
-
-            if !compact {
-                // Multi-model selection
-                VStack(alignment: .leading, spacing: 6) {
-                    HStack {
-                        Text("Parallel Models")
-                            .font(.subheadline.bold())
-                        Spacer()
-                    }
-
-                    ParallelModelsList(
-                        fetchedModels: filteredModels,
-                        enabledModels: enabledModels,
-                        metaService: metaService,
-                        defaultModel: modelText
-                    )
+                if let error = connectionManager.modelFetchError {
+                    Label(error, systemImage: "exclamationmark.triangle.fill")
+                        .foregroundStyle(.orange)
+                        .font(.caption)
+                        .lineLimit(2)
                 }
             }
 
@@ -152,8 +176,7 @@ struct OpenAIConfigFields: View {
             if enabledModelsState != newValue { enabledModelsState = newValue }
         }
         .task {
-            if !compact,
-               connectionManager.fetchedModels.isEmpty,
+            if connectionManager.fetchedModels.isEmpty,
                !apiKeyText.isEmpty,
                !baseURLText.isEmpty {
                 await connectionManager.fetchModels(
@@ -163,12 +186,9 @@ struct OpenAIConfigFields: View {
                     silent: true
                 )
             }
-            if !compact {
-                await metaService.fetchIfNeeded()
-            }
+            await metaService.fetchIfNeeded()
         }
     }
-
 }
 
 // MARK: - Model Checkbox Row

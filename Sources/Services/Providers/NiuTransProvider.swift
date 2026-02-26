@@ -102,11 +102,13 @@ private struct NiuTransSettingsView: View {
     var body: some View {
         Form {
             Section("API Configuration") {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("API Key")
-                        .font(.subheadline.bold())
-                    SecureField("Enter NiuTrans API Key", text: apiKey)
-                        .textFieldStyle(.roundedBorder)
+                VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("API Key")
+                            .font(.subheadline.bold())
+                        SecureField("Enter NiuTrans API Key", text: apiKey)
+                            .textFieldStyle(.roundedBorder)
+                    }
                 }
             }
 

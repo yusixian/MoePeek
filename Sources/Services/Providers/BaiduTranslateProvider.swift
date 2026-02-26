@@ -125,18 +125,20 @@ private struct BaiduSettingsView: View {
     var body: some View {
         Form {
             Section("API Configuration") {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("App ID")
-                        .font(.subheadline.bold())
-                    TextField("Enter Baidu App ID", text: appId)
-                        .textFieldStyle(.roundedBorder)
-                }
+                VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("App ID")
+                            .font(.subheadline.bold())
+                        TextField("Enter Baidu App ID", text: appId)
+                            .textFieldStyle(.roundedBorder)
+                    }
 
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Secret Key")
-                        .font(.subheadline.bold())
-                    SecureField("Enter Baidu Secret Key", text: secretKey)
-                        .textFieldStyle(.roundedBorder)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Secret Key")
+                            .font(.subheadline.bold())
+                        SecureField("Enter Baidu Secret Key", text: secretKey)
+                            .textFieldStyle(.roundedBorder)
+                    }
                 }
             }
 
