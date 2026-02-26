@@ -117,7 +117,8 @@ struct OpenAIConfigFields: View {
                     ParallelModelsList(
                         fetchedModels: filteredModels,
                         enabledModels: enabledModels,
-                        metaService: metaService
+                        metaService: metaService,
+                        defaultModel: modelText
                     )
                 }
             }
@@ -177,17 +178,31 @@ struct ModelCheckboxRow: View {
     let isEnabled: Bool
     let isUnknown: Bool
     let isDisabled: Bool
+    var isDefault: Bool = false
     var metaMatch: ModelMetadataService.MetaMatch? = nil
     let onToggle: () -> Void
 
     var body: some View {
         Button(action: onToggle) {
             HStack(spacing: 6) {
-                Image(systemName: isEnabled ? "checkmark.square.fill" : "square")
-                    .foregroundStyle(isEnabled ? Color.accentColor : .secondary)
+                if isDefault {
+                    Image(systemName: "checkmark.square.fill")
+                        .foregroundStyle(.secondary)
+                } else {
+                    Image(systemName: isEnabled ? "checkmark.square.fill" : "square")
+                        .foregroundStyle(isEnabled ? Color.accentColor : .secondary)
+                }
                 Text(modelID)
                     .lineLimit(1)
-                if isUnknown && metaMatch == nil {
+                if isDefault {
+                    Text("(default)")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                    Image(systemName: "lock.fill")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+                if isUnknown && metaMatch == nil && !isDefault {
                     Text("(unknown)")
                         .font(.caption2)
                         .foregroundStyle(.orange)
@@ -200,7 +215,7 @@ struct ModelCheckboxRow: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .disabled(isDisabled)
+        .disabled(isDisabled || isDefault)
         .opacity(isDisabled ? 0.5 : 1)
         .padding(.vertical, 2)
         .padding(.horizontal, 4)

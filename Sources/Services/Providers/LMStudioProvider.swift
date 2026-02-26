@@ -4,7 +4,7 @@ import SwiftUI
 
 /// LM Studio local LLM provider. Uses OpenAI-compatible API endpoints
 /// (default: http://localhost:1234/v1). No API key required.
-struct LMStudioProvider: TranslationProvider {
+struct LMStudioProvider: ParallelModelProvider {
     let id = "lmstudio"
     let displayName = "LM Studio"
     let iconSystemName = "cpu"
@@ -20,11 +20,6 @@ struct LMStudioProvider: TranslationProvider {
         "provider_lmstudio_systemPrompt",
         default: "Translate the following text to {targetLang}. Only output the translation, nothing else."
     )
-
-    var activeModels: [String] {
-        let enabled = Defaults[enabledModelsKey]
-        return enabled.isEmpty ? [] : enabled.sorted()
-    }
 
     var resolvedBaseURL: String {
         Defaults[baseURLKey].trimmingCharacters(in: CharacterSet(charactersIn: "/"))

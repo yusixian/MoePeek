@@ -8,7 +8,7 @@ import SwiftUI
 /// - System prompt as top-level `system` field (not in messages array)
 /// - `max_tokens` is required
 /// - Different SSE event format
-struct AnthropicProvider: TranslationProvider {
+struct AnthropicProvider: ParallelModelProvider {
     static let apiVersion = "2023-06-01"
 
     let id = "anthropic"
@@ -29,11 +29,6 @@ struct AnthropicProvider: TranslationProvider {
         default: "Translate the following text to {targetLang}. Only output the translation, nothing else."
     )
     let maxTokensKey = Defaults.Key<Int>("provider_anthropic_maxTokens", default: 4096)
-
-    var activeModels: [String] {
-        let enabled = Defaults[enabledModelsKey]
-        return enabled.isEmpty ? [] : enabled.sorted()
-    }
 
     @MainActor
     var isConfigured: Bool {

@@ -1,6 +1,16 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "(default)" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "（默认）"
+          }
+        }
+      }
+    },
     "(unknown)" : {
       "localizations" : {
         "zh-Hans" : {
@@ -116,6 +126,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "应用更新后，macOS 可能会撤销之前授予的权限。请在下方重新授权。"
+          }
+        }
+      }
+    },
+    "All Models" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全部模型"
           }
         }
       }
@@ -362,6 +382,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "检查中…"
+          }
+        }
+      }
+    },
+    "Clear All" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全部清除"
           }
         }
       }
@@ -1654,6 +1684,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "选择翻译服务"
+          }
+        }
+      }
+    },
+    "Selected" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已选模型"
           }
         }
       }

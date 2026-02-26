@@ -209,7 +209,8 @@ struct AnthropicSettingsView: View {
         ParallelModelsList(
             fetchedModels: connectionManager.fetchedModels,
             enabledModels: enabledModels,
-            metaService: metaService
+            metaService: metaService,
+            defaultModel: modelText
         )
     }
 }

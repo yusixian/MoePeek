@@ -4,7 +4,7 @@ import SwiftUI
 
 /// Ollama local LLM provider. Uses Ollama's native API for model listing
 /// and OpenAI-compatible endpoint for translation.
-struct OllamaProvider: TranslationProvider {
+struct OllamaProvider: ParallelModelProvider {
     let id = "ollama"
     let displayName = "Ollama"
     let iconAssetName: String? = "Ollama"
@@ -20,12 +20,6 @@ struct OllamaProvider: TranslationProvider {
         "provider_ollama_systemPrompt",
         default: "Translate the following text to {targetLang}. Only output the translation, nothing else."
     )
-
-    /// Models explicitly enabled for parallel translation. Empty means use default single model.
-    var activeModels: [String] {
-        let enabled = Defaults[enabledModelsKey]
-        return enabled.isEmpty ? [] : enabled.sorted()
-    }
 
     var resolvedBaseURL: String {
         Defaults[baseURLKey].trimmingCharacters(in: CharacterSet(charactersIn: "/"))

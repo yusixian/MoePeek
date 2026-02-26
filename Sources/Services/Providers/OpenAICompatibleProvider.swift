@@ -3,7 +3,7 @@ import Foundation
 import SwiftUI
 
 /// A parameterized provider for any OpenAI-compatible API (OpenAI, DeepSeek, etc.).
-struct OpenAICompatibleProvider: TranslationProvider {
+struct OpenAICompatibleProvider: ParallelModelProvider {
     let id: String
     let displayName: String
     let iconSystemName: String
@@ -25,12 +25,6 @@ struct OpenAICompatibleProvider: TranslationProvider {
     let systemPromptKey: Defaults.Key<String>
     let apiKeyKey: Defaults.Key<String>
     let guideURL: String?
-
-    /// Models explicitly enabled for parallel translation. Empty means use default single model.
-    var activeModels: [String] {
-        let enabled = Defaults[enabledModelsKey]
-        return enabled.isEmpty ? [] : enabled.sorted()
-    }
 
     /// All UserDefaults suffixes used by this provider type.
     private static let defaultsSuffixes = ["baseURL", "apiKey", "model", "enabledModels", "systemPrompt"]

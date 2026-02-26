@@ -1,3 +1,4 @@
+import Defaults
 import Foundation
 import SwiftUI
 
@@ -62,10 +63,30 @@ protocol TranslationProvider: Sendable {
     @MainActor func makeSettingsView() -> AnyView
 }
 
-// MARK: - Default Implementation
+// MARK: - Parallel Model Support
 
 /// Maximum number of models that can be enabled for parallel translation per provider.
 let maxParallelModels = 20
+
+/// Providers that support parallel multi-model translation.
+/// Conforming types get a shared `activeModels` implementation:
+/// empty `enabledModels` → single-model mode; non-empty → enabled set ∪ default model.
+protocol ParallelModelProvider: TranslationProvider {
+    var modelKey: Defaults.Key<String> { get }
+    var enabledModelsKey: Defaults.Key<Set<String>> { get }
+}
+
+extension ParallelModelProvider {
+    var activeModels: [String] {
+        let enabled = Defaults[enabledModelsKey]
+        guard !enabled.isEmpty else { return [] }
+        var all = enabled
+        all.insert(Defaults[modelKey])
+        return all.sorted()
+    }
+}
+
+// MARK: - Default Implementation
 
 extension TranslationProvider {
     var category: ProviderCategory { .llm }
