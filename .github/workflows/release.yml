@@ -78,12 +78,16 @@ jobs:
 
       - name: Verify code signature
         run: |
-          codesign --verify --strict \
-            build/MoePeek.xcarchive/Products/Applications/MoePeek.app
-          echo "Signature info:"
-          codesign -dvvv \
-            build/MoePeek.xcarchive/Products/Applications/MoePeek.app 2>&1 \
-            | grep -E "Authority|Identifier|TeamIdentifier"
+          APP="build/MoePeek.xcarchive/Products/Applications/MoePeek.app"
+          codesign --verify --strict "$APP"
+
+          SIGN_INFO=$(codesign -dvvv "$APP" 2>&1)
+          echo "$SIGN_INFO" | grep -E "Authority|Identifier|TeamIdentifier"
+
+          if echo "$SIGN_INFO" | grep -q "TeamIdentifier=not set"; then
+            echo "::error::Code signature has no TeamIdentifier (ad-hoc signing). Check SIGNING_IDENTITY and SIGNING_CERTIFICATE secrets."
+            exit 1
+          fi
 
       - name: Prepare app bundle
         run: |
