@@ -63,13 +63,14 @@ enum ClipboardGrabber {
 
         let postCopyCount = pasteboard.changeCount
 
-        // File selections (e.g. Finder items) may put file URLs on the pasteboard;
-        // these are not text selections and should not trigger the floating icon.
-        if pasteboard.canReadObject(forClasses: [NSURL.self], options: nil) {
-            return nil
-        }
+        // Detect file URLs (e.g. Finder items) — only match file:// URLs,
+        // not web URLs which may accompany normal text copies.
+        let isFileSelection = pasteboard.canReadObject(
+            forClasses: [NSURL.self],
+            options: [.urlReadingFileURLsOnly: true]
+        )
 
-        let text = pasteboard.string(forType: .string)
+        let text = isFileSelection ? nil : pasteboard.string(forType: .string)
 
         // 30ms grace period: if the user's real ⌘+C arrives slightly after our polling
         // finishes, the changeCount will bump again.
