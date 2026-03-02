@@ -71,6 +71,8 @@ final class SelectionMonitor {
     private func handleMouseUp(at point: CGPoint, clickCount: Int) {
         guard Defaults[.isAutoDetectEnabled], !isSuppressed else { return }
 
+        let isFinderFrontmost = NSWorkspace.shared.frontmostApplication?.bundleIdentifier == "com.apple.finder"
+
         // Determine if the gesture looks like a text selection (drag or multi-click)
         var wasDragOrMultiClick = clickCount >= 2
         if !wasDragOrMultiClick, let downPoint = mouseDownPoint {
@@ -101,6 +103,10 @@ final class SelectionMonitor {
             // Only attempt fallback tiers if the gesture looks like a selection
             guard wasDragOrMultiClick else { return }
 
+                // Finder file/item selections are not text selections. Skip fallback tiers
+                // (especially clipboard simulation) to avoid false positives on desktop/file views.
+                guard !isFinderFrontmost else { return }
+
             // Tier 2: AppleScript — Safari-specific JS selection
             if let text = await AppleScriptGrabber.grabFromSafari(),
                !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
@@ -113,6 +119,11 @@ final class SelectionMonitor {
             // Short-circuit before Tier 3: if the clipboard changed since mouse-up,
             // the user already pressed ⌘+C — read directly without simulating another copy.
             if NSPasteboard.general.changeCount != clipboardCountAtMouseUp {
+                // If the clipboard currently contains file URLs, treat it as non-text selection.
+                if NSPasteboard.general.canReadObject(forClasses: [NSURL.self], options: nil) {
+                    return
+                }
+
                 if let text = NSPasteboard.general.string(forType: .string),
                    !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                     self.onTextSelected?(text, point)

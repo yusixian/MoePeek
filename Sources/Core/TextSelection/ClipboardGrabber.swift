@@ -62,6 +62,13 @@ enum ClipboardGrabber {
         }
 
         let postCopyCount = pasteboard.changeCount
+
+        // File selections (e.g. Finder items) may put file URLs on the pasteboard;
+        // these are not text selections and should not trigger the floating icon.
+        if pasteboard.canReadObject(forClasses: [NSURL.self], options: nil) {
+            return nil
+        }
+
         let text = pasteboard.string(forType: .string)
 
         // 30ms grace period: if the user's real ⌘+C arrives slightly after our polling

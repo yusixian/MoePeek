@@ -29,6 +29,11 @@ enum AccessibilityGrabber {
         // Safe: CFGetTypeID verified above; as?/as! cannot express CF type casts cleanly.
         let focusedElement = unsafeBitCast(focusedRef, to: AXUIElement.self)
 
+        // Require a concrete text range. This filters out non-text selections
+        // (e.g. selected files/items in list views) that may still expose
+        // a string-like selected value via AX.
+        guard hasNonEmptySelectedTextRange(focusedElement) else { return nil }
+
         var selectedValue: CFTypeRef?
         let selectResult = AXUIElementCopyAttributeValue(
             focusedElement,
@@ -75,5 +80,28 @@ enum AccessibilityGrabber {
         }
 
         return text
+    }
+
+    @MainActor
+    private static func hasNonEmptySelectedTextRange(_ element: AXUIElement) -> Bool {
+        var rangeValue: CFTypeRef?
+        let rangeResult = AXUIElementCopyAttributeValue(
+            element,
+            kAXSelectedTextRangeAttribute as CFString,
+            &rangeValue
+        )
+
+        guard rangeResult == .success,
+              let rangeRef = rangeValue,
+              CFGetTypeID(rangeRef) == AXValueGetTypeID()
+        else { return false }
+
+        let axRangeValue = rangeRef as! AXValue
+        guard AXValueGetType(axRangeValue) == .cfRange else { return false }
+
+        var range = CFRange(location: 0, length: 0)
+        guard AXValueGetValue(axRangeValue, .cfRange, &range) else { return false }
+
+        return range.length > 0
     }
 }
