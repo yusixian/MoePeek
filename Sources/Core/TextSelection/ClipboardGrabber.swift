@@ -62,7 +62,15 @@ enum ClipboardGrabber {
         }
 
         let postCopyCount = pasteboard.changeCount
-        let text = pasteboard.string(forType: .string)
+
+        // Detect file URLs (e.g. Finder items) — only match file:// URLs,
+        // not web URLs which may accompany normal text copies.
+        let isFileSelection = pasteboard.canReadObject(
+            forClasses: [NSURL.self],
+            options: [.urlReadingFileURLsOnly: true]
+        )
+
+        let text = isFileSelection ? nil : pasteboard.string(forType: .string)
 
         // 30ms grace period: if the user's real ⌘+C arrives slightly after our polling
         // finishes, the changeCount will bump again.

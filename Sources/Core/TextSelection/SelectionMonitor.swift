@@ -71,6 +71,8 @@ final class SelectionMonitor {
     private func handleMouseUp(at point: CGPoint, clickCount: Int) {
         guard Defaults[.isAutoDetectEnabled], !isSuppressed else { return }
 
+        let isFinderFrontmost = NSWorkspace.shared.frontmostApplication?.bundleIdentifier == "com.apple.finder"
+
         // Determine if the gesture looks like a text selection (drag or multi-click)
         var wasDragOrMultiClick = clickCount >= 2
         if !wasDragOrMultiClick, let downPoint = mouseDownPoint {
@@ -101,7 +103,7 @@ final class SelectionMonitor {
             // Only attempt fallback tiers if the gesture looks like a selection
             guard wasDragOrMultiClick else { return }
 
-            // Tier 2: AppleScript — Safari-specific JS selection
+            // Tier 2: AppleScript — Safari-specific JS selection (Finder won't match)
             if let text = await AppleScriptGrabber.grabFromSafari(),
                !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                 self.onTextSelected?(text, point)
@@ -110,9 +112,19 @@ final class SelectionMonitor {
 
             guard !Task.isCancelled else { return }
 
+            // Finder file/item drag gestures should not trigger clipboard-based detection.
+            // Tier 1 (AX) already handles Finder correctly (file rows don't expose text attributes).
+            // This guard prevents Tier 3 clipboard simulation from copying file paths.
+            guard !isFinderFrontmost else { return }
+
             // Short-circuit before Tier 3: if the clipboard changed since mouse-up,
             // the user already pressed ⌘+C — read directly without simulating another copy.
             if NSPasteboard.general.changeCount != clipboardCountAtMouseUp {
+                // If the clipboard currently contains file URLs, treat it as non-text selection.
+                if NSPasteboard.general.canReadObject(forClasses: [NSURL.self], options: [.urlReadingFileURLsOnly: true]) {
+                    return
+                }
+
                 if let text = NSPasteboard.general.string(forType: .string),
                    !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                     self.onTextSelected?(text, point)
