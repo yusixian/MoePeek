@@ -52,7 +52,10 @@ final class PopupPanelController {
             y: visibleFrame.midY - initialSize.height / 2
         )
         panel.setFrame(NSRect(origin: origin, size: initialSize), display: true)
-        // Input mode needs key window status so the TextEditor receives keyboard focus.
+        // Input mode needs the app activated so the panel can receive keyboard events.
+        // Without this, makeKeyAndOrderFront alone won't route keystrokes to our panel
+        // because macOS keeps delivering them to the previously active app.
+        NSApp.activate(ignoringOtherApps: true)
         panel.makeKeyAndOrderFront(nil)
 
         startDismissMonitor()

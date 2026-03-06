@@ -44,6 +44,7 @@ enum AppLanguage: String, CaseIterable, Defaults.Serializable {
 enum SettingsTab: String, Defaults.Serializable {
     case general
     case services
+    case providerOrder
     case about
 }
 
@@ -64,6 +65,9 @@ extension Defaults.Keys {
 
     // Enabled translation providers
     static let enabledProviders = Key<Set<String>>("enabledProviders", default: ["openai"])
+
+    // User-defined display order for providers (ordered list of provider IDs)
+    static let providerOrder = Key<[String]>("providerOrder", default: [])
 
     // Language detection
     static let detectionConfidenceThreshold = Key<Double>("detectionConfidenceThreshold", default: 0.3)

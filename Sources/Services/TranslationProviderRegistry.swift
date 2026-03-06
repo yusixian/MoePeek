@@ -21,20 +21,39 @@ final class TranslationProviderRegistry {
     /// Enabled providers expanded into per-model slots.
     /// Multi-model providers yield one `ModelSlotProvider` per active model;
     /// single-model providers pass through unchanged (preserving their original id).
+    /// Order respects `providerOrder` user preference; unordered providers append at end.
     var enabledSlots: [any TranslationProvider] {
         let ids = Defaults[.enabledProviders]
-        var result: [any TranslationProvider] = []
-        for provider in providers where ids.contains(provider.id) {
-            let models = provider.activeModels
-            if models.isEmpty {
-                result.append(provider)
-            } else {
-                for model in models.prefix(maxParallelModels) {
-                    result.append(ModelSlotProvider(inner: provider, modelOverride: model))
-                }
+        let enabledProviders = providers.filter { ids.contains($0.id) }
+
+        // Build ordered list: providerOrder first, then remaining by registration order
+        let order = Defaults[.providerOrder]
+        var seen = Set<String>()
+        var ordered: [any TranslationProvider] = []
+
+        for id in order {
+            if let provider = enabledProviders.first(where: { $0.id == id }) {
+                appendSlots(for: provider, to: &ordered)
+                seen.insert(id)
             }
         }
-        return result
+        for provider in enabledProviders where !seen.contains(provider.id) {
+            appendSlots(for: provider, to: &ordered)
+        }
+
+        return ordered
+    }
+
+    /// Expand a single provider into its model slots and append to the result array.
+    private func appendSlots(for provider: any TranslationProvider, to result: inout [any TranslationProvider]) {
+        let models = provider.activeModels
+        if models.isEmpty {
+            result.append(provider)
+        } else {
+            for model in models.prefix(maxParallelModels) {
+                result.append(ModelSlotProvider(inner: provider, modelOverride: model))
+            }
+        }
     }
 
     func provider(withID id: String) -> (any TranslationProvider)? {
@@ -71,6 +90,7 @@ final class TranslationProviderRegistry {
         var enabled = Defaults[.enabledProviders]
         enabled.remove(id)
         Defaults[.enabledProviders] = enabled
+        Defaults[.providerOrder].removeAll { $0 == id }
         OpenAICompatibleProvider.cleanupDefaults(for: id)
         providers.removeAll { $0.id == id }
     }

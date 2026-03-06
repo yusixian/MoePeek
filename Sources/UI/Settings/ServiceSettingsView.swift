@@ -161,8 +161,13 @@ struct ServiceSettingsView: View {
             set: { isEnabled in
                 if isEnabled {
                     enabledProviders.insert(id)
+                    // Append to order list so newly enabled providers appear at the end
+                    if !Defaults[.providerOrder].contains(id) {
+                        Defaults[.providerOrder].append(id)
+                    }
                 } else {
                     enabledProviders.remove(id)
+                    Defaults[.providerOrder].removeAll { $0 == id }
                 }
             }
         )
