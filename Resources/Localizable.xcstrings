@@ -1937,7 +1937,6 @@
       }
     },
     "System Default" : {
-      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {

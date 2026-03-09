@@ -7,12 +7,14 @@ struct SourceInputView: View {
     @Binding var text: String
     let onSubmit: () -> Void
     @Default(.popupFontSize) private var fontSize
+    @Default(.popupFontName) private var fontName
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             SourceTextEditor(
                 text: $text,
                 fontSize: CGFloat(fontSize),
+                fontName: fontName,
                 onSubmit: onSubmit
             )
                 .frame(maxHeight: .infinity)
@@ -22,7 +24,7 @@ struct SourceInputView: View {
                 Spacer()
 
                 Text("↵ Translate · ⇧↵ Newline")
-                    .font(.system(size: CGFloat(fontSize - 4)))
+                    .font(.popup(name: fontName, size: CGFloat(fontSize - 4)))
                     .foregroundStyle(.quaternary)
             }
         }
@@ -32,7 +34,12 @@ struct SourceInputView: View {
 private struct SourceTextEditor: NSViewRepresentable {
     @Binding var text: String
     let fontSize: CGFloat
+    let fontName: String
     let onSubmit: () -> Void
+
+    private var resolvedFont: NSFont {
+        .popup(name: fontName, size: fontSize)
+    }
 
     func makeCoordinator() -> Coordinator {
         Coordinator(text: $text)
@@ -56,7 +63,7 @@ private struct SourceTextEditor: NSViewRepresentable {
         textView.drawsBackground = false
         textView.delegate = context.coordinator
         textView.string = text
-        textView.font = .systemFont(ofSize: fontSize)
+        textView.font = resolvedFont
         textView.textColor = .labelColor
         textView.insertionPointColor = .labelColor
         textView.textContainerInset = .zero
@@ -81,7 +88,7 @@ private struct SourceTextEditor: NSViewRepresentable {
             textView.string = text
         }
 
-        textView.font = .systemFont(ofSize: fontSize)
+        textView.font = resolvedFont
         textView.textColor = .labelColor
         textView.insertionPointColor = .labelColor
         textView.onSubmit = onSubmit

@@ -8,6 +8,7 @@ struct ProviderResultCard: View {
     @Binding var isExpanded: Bool
     var onRetry: (() -> Void)?
     @Default(.popupFontSize) private var fontSize
+    @Default(.popupFontName) private var fontName
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -27,7 +28,7 @@ struct ProviderResultCard: View {
                         .foregroundStyle(.secondary)
 
                     Text(provider.displayName)
-                        .font(.system(size: CGFloat(fontSize - 2)))
+                        .font(.popup(name: fontName, size: CGFloat(fontSize - 2)))
                         .fontWeight(.medium)
 
                     Spacer()
@@ -92,16 +93,16 @@ struct ProviderResultCard: View {
         switch state {
         case .waiting:
             Text("Waiting…")
-                .font(.system(size: CGFloat(fontSize)))
+                .font(.popup(name: fontName, size: CGFloat(fontSize)))
                 .foregroundStyle(.tertiary)
         case .translating:
             Text("Translating…")
-                .font(.system(size: CGFloat(fontSize)))
+                .font(.popup(name: fontName, size: CGFloat(fontSize)))
                 .foregroundStyle(.secondary)
         case let .streaming(partial):
             VStack(alignment: .leading, spacing: 4) {
                 Text(partial)
-                    .font(.system(size: CGFloat(fontSize)))
+                    .font(.popup(name: fontName, size: CGFloat(fontSize)))
                     .textSelection(.enabled)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -109,7 +110,7 @@ struct ProviderResultCard: View {
         case let .completed(text):
             VStack(alignment: .leading, spacing: 4) {
                 Text(text)
-                    .font(.system(size: CGFloat(fontSize)))
+                    .font(.popup(name: fontName, size: CGFloat(fontSize)))
                     .textSelection(.enabled)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -120,7 +121,7 @@ struct ProviderResultCard: View {
                         NSPasteboard.general.setString(text, forType: .string)
                     } label: {
                         Label("Copy", systemImage: "doc.on.doc")
-                            .font(.system(size: CGFloat(fontSize - 2)))
+                            .font(.popup(name: fontName, size: CGFloat(fontSize - 2)))
                     }
                     .buttonStyle(.bordered)
                     .controlSize(.mini)
@@ -130,7 +131,7 @@ struct ProviderResultCard: View {
         case let .error(message):
             VStack(alignment: .leading, spacing: 4) {
                 Label(message, systemImage: "exclamationmark.triangle")
-                    .font(.system(size: CGFloat(fontSize)))
+                    .font(.popup(name: fontName, size: CGFloat(fontSize)))
                     .foregroundStyle(.red)
 
                 if let onRetry {
@@ -138,7 +139,7 @@ struct ProviderResultCard: View {
                         Spacer()
                         Button(action: onRetry) {
                             Label("Retry", systemImage: "arrow.clockwise")
-                                .font(.system(size: CGFloat(fontSize - 2)))
+                                .font(.popup(name: fontName, size: CGFloat(fontSize - 2)))
                         }
                         .buttonStyle(.bordered)
                         .controlSize(.mini)

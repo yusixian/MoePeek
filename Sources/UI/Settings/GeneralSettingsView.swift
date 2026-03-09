@@ -10,12 +10,14 @@ struct GeneralSettingsView: View {
     @Default(.popupDefaultWidth) private var popupDefaultWidth
     @Default(.popupDefaultHeight) private var popupDefaultHeight
     @Default(.popupFontSize) private var popupFontSize
+    @Default(.popupFontName) private var popupFontName
     @Default(.sourceLanguage) private var sourceLanguage
     @Default(.detectionConfidenceThreshold) private var confidenceThreshold
     @Default(.appLanguage) private var appLanguage
 
     @State private var launchAtLogin = SMAppService.mainApp.status == .enabled
     @State private var showRestartAlert = false
+    @State private var availableFonts = NSFontManager.shared.availableFontFamilies
 
     var body: some View {
         Form {
@@ -124,6 +126,17 @@ struct GeneralSettingsView: View {
                         in: 12...24,
                         step: 1
                     )
+                }
+
+                Picker("Font:", selection: $popupFontName) {
+                    Text("System Default")
+                        .tag("")
+                    Divider()
+                    ForEach(availableFonts, id: \.self) { family in
+                        Text(family)
+                            .font(.custom(family, size: 13))
+                            .tag(family)
+                    }
                 }
             }
         }
