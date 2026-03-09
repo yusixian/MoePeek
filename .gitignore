@@ -21,3 +21,5 @@ Tuist/.build/
 
 # Sparkle appcast (generated locally or by CI)
 appcast.xml
+
+.claude
