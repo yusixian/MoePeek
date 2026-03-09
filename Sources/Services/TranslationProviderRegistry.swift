@@ -18,30 +18,38 @@ final class TranslationProviderRegistry {
         return providers.filter { ids.contains($0.id) }
     }
 
+    /// Sort providers by a preferred order list, appending any unseen providers at the end.
+    static func sorted(_ providers: [any TranslationProvider], by order: [String]) -> [any TranslationProvider] {
+        var seen = Set<String>()
+        var result: [any TranslationProvider] = []
+
+        for id in order {
+            if let provider = providers.first(where: { $0.id == id }) {
+                result.append(provider)
+                seen.insert(id)
+            }
+        }
+        for provider in providers where !seen.contains(provider.id) {
+            result.append(provider)
+        }
+
+        return result
+    }
+
     /// Enabled providers expanded into per-model slots.
     /// Multi-model providers yield one `ModelSlotProvider` per active model;
     /// single-model providers pass through unchanged (preserving their original id).
     /// Order respects `providerOrder` user preference; unordered providers append at end.
+    ///
+    /// - Note: This reads `Defaults[.providerOrder]` which is not tracked by `@Observable`.
+    ///   This property is read per-translation call, not observed by SwiftUI.
     var enabledSlots: [any TranslationProvider] {
-        let ids = Defaults[.enabledProviders]
-        let enabledProviders = providers.filter { ids.contains($0.id) }
-
-        // Build ordered list: providerOrder first, then remaining by registration order
-        let order = Defaults[.providerOrder]
-        var seen = Set<String>()
-        var ordered: [any TranslationProvider] = []
-
-        for id in order {
-            if let provider = enabledProviders.first(where: { $0.id == id }) {
-                appendSlots(for: provider, to: &ordered)
-                seen.insert(id)
-            }
+        let ordered = Self.sorted(enabledProviders, by: Defaults[.providerOrder])
+        var result: [any TranslationProvider] = []
+        for provider in ordered {
+            appendSlots(for: provider, to: &result)
         }
-        for provider in enabledProviders where !seen.contains(provider.id) {
-            appendSlots(for: provider, to: &ordered)
-        }
-
-        return ordered
+        return result
     }
 
     /// Expand a single provider into its model slots and append to the result array.

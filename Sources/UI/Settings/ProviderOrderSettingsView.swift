@@ -9,22 +9,10 @@ struct ProviderOrderSettingsView: View {
     @Default(.providerOrder) private var providerOrder
 
     /// Enabled providers sorted by the user's preferred order.
+    /// Uses `@Default` wrappers so SwiftUI re-renders on changes.
     private var orderedProviders: [any TranslationProvider] {
         let enabled = registry.providers.filter { enabledProviders.contains($0.id) }
-        var seen = Set<String>()
-        var result: [any TranslationProvider] = []
-
-        for id in providerOrder {
-            if let provider = enabled.first(where: { $0.id == id }) {
-                result.append(provider)
-                seen.insert(id)
-            }
-        }
-        for provider in enabled where !seen.contains(provider.id) {
-            result.append(provider)
-        }
-
-        return result
+        return TranslationProviderRegistry.sorted(enabled, by: providerOrder)
     }
 
     var body: some View {
