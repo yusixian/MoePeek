@@ -121,6 +121,7 @@ private final class SubmitAwareTextView: NSTextView {
         // During IME composition (e.g. Chinese Pinyin), Enter should first commit marked text.
         // Only submit translation when composition has ended.
         if isReturnKey, !hasShift, !hasMarkedText() {
+            guard !string.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
             onSubmit?()
             return
         }

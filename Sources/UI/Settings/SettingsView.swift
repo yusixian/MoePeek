@@ -11,6 +11,7 @@ struct SettingsView: View {
         switch selectedTab {
         case .general: return 680
         case .services: return 580
+        case .providerOrder: return 520
         case .about: return 420
         }
     }
@@ -28,6 +29,12 @@ struct SettingsView: View {
                     Label("Services", systemImage: "globe")
                 }
                 .tag(SettingsTab.services)
+
+            ProviderOrderSettingsView(registry: registry)
+                .tabItem {
+                    Label("Order", systemImage: "list.number")
+                }
+                .tag(SettingsTab.providerOrder)
 
             AboutSettingsView(updaterController: updaterController)
                 .tabItem {

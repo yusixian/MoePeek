@@ -595,6 +595,16 @@
         }
       }
     },
+    "Drag to reorder. This controls the display order of translation results." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "拖拽以调整顺序。此设置控制翻译结果的显示顺序。"
+          }
+        }
+      }
+    },
     "Empty text" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -602,6 +612,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "文本为空"
+          }
+        }
+      }
+    },
+    "Enable at least one provider in the Services tab to configure display order." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请在\"服务\"标签页中启用至少一个服务以配置显示顺序。"
           }
         }
       }
@@ -1156,6 +1176,17 @@
         }
       }
     },
+    "No Providers Enabled" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未启用任何服务"
+          }
+        }
+      }
+    },
     "No providers enabled. Enable at least one in Settings." : {
       "extractionState" : "stale",
       "localizations" : {
@@ -1299,6 +1330,17 @@
         }
       }
     },
+    "Order" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "排序"
+          }
+        }
+      }
+    },
     "Parallel Models" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -1402,6 +1444,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "保护您的自托管 DeepLX 服务器。通过 `--token` 标志或 `TOKEN` 环境变量设置。"
+          }
+        }
+      }
+    },
+    "Provider Display Order" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服务显示顺序"
           }
         }
       }
