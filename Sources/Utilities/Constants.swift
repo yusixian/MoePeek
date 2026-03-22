@@ -39,10 +39,19 @@ enum AppLanguage: String, CaseIterable, Defaults.Serializable {
     }
 }
 
+// MARK: - Text Detection Mode
+
+enum TextDetectionMode: String, CaseIterable, Defaults.Serializable {
+    case conservative  // Tier 1 only (AX API)
+    case standard      // Tier 1 + Tier 2 (AX + AppleScript)
+    case full          // Tier 1 + Tier 2 + Tier 3 (AX + AppleScript + ⌘C simulation)
+}
+
 // MARK: - Settings Tab
 
 enum SettingsTab: String, Defaults.Serializable {
     case general
+    case excludedApps
     case services
     case providerOrder
     case about
@@ -77,6 +86,8 @@ extension Defaults.Keys {
 
     // Auto-detect text selection
     static let isAutoDetectEnabled = Key<Bool>("isAutoDetectEnabled", default: true)
+    static let textDetectionMode = Key<TextDetectionMode>("textDetectionMode", default: .full)
+    static let excludedAppBundleIDs = Key<Set<String>>("excludedAppBundleIDs", default: [])
 
     // Appearance
     static let showInDock = Key<Bool>("showInDock", default: true)

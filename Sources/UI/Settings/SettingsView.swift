@@ -10,6 +10,7 @@ struct SettingsView: View {
     private var tabHeight: CGFloat {
         switch selectedTab {
         case .general: return 680
+        case .excludedApps: return 480
         case .services: return 580
         case .providerOrder: return 520
         case .about: return 420
@@ -23,6 +24,12 @@ struct SettingsView: View {
                     Label("General", systemImage: "gear")
                 }
                 .tag(SettingsTab.general)
+
+            ExcludedAppsSettingsView()
+                .tabItem {
+                    Label("Excluded Apps", systemImage: "xmark.app")
+                }
+                .tag(SettingsTab.excludedApps)
 
             ServiceSettingsView(registry: registry)
                 .tabItem {

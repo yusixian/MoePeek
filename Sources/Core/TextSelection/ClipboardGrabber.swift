@@ -106,11 +106,11 @@ enum ClipboardGrabber {
         let keyDown = CGEvent(keyboardEventSource: source, virtualKey: 0x08, keyDown: true) // 'c'
         keyDown?.flags = .maskCommand
         keyDown?.setIntegerValueField(.eventSourceUserData, value: syntheticEventTag)
-        keyDown?.post(tap: .cghidEventTap)
+        keyDown?.post(tap: .cgSessionEventTap)
 
         let keyUp = CGEvent(keyboardEventSource: source, virtualKey: 0x08, keyDown: false)
         keyUp?.flags = .maskCommand
         keyUp?.setIntegerValueField(.eventSourceUserData, value: syntheticEventTag)
-        keyUp?.post(tap: .cghidEventTap)
+        keyUp?.post(tap: .cgSessionEventTap)
     }
 }
