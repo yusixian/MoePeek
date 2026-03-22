@@ -119,11 +119,8 @@ final class SelectionMonitor {
 
             guard !Task.isCancelled else { return }
 
-            // Tier 3 gate: require full mode, exclude Finder and remote desktop apps
-            guard mode == .full,
-                  !isFinderFrontmost,
-                  !Defaults[.tier3ExcludedBundleIDs].contains(frontBundleID)
-            else { return }
+            // Tier 3 gate: require full mode, exclude Finder
+            guard mode == .full, !isFinderFrontmost else { return }
 
             // Short-circuit before Tier 3: if the clipboard changed since mouse-up,
             // the user already pressed ⌘+C — read directly without simulating another copy.

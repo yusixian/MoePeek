@@ -89,19 +89,6 @@ extension Defaults.Keys {
     static let textDetectionMode = Key<TextDetectionMode>("textDetectionMode", default: .full)
     static let excludedAppBundleIDs = Key<Set<String>>("excludedAppBundleIDs", default: [])
 
-    // Apps excluded from Tier 3 (⌘C simulation) even in full mode
-    static let tier3ExcludedBundleIDs = Key<Set<String>>(
-        "tier3ExcludedBundleIDs",
-        default: [
-            "com.microsoft.rdc.macos",           // Windows App
-            "com.microsoft.rdc.osx",             // Microsoft Remote Desktop (legacy)
-            "net.parallels.desktop.console",     // Parallels Desktop
-            "com.vmware.fusion",                 // VMware Fusion
-            "com.citrix.receiver.icaviewer.mac", // Citrix Workspace
-            "com.realvnc.vncviewer",             // RealVNC Viewer
-        ]
-    )
-
     // Appearance
     static let showInDock = Key<Bool>("showInDock", default: true)
 
