@@ -245,6 +245,16 @@
         }
       }
     },
+    "Apps in the blocklist will not trigger automatic text selection detection." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "如果 App 在「排除应用」名单中，则不会触发鼠标自动划词。"
+          }
+        }
+      }
+    },
     "Auto Detect" : {
       "localizations" : {
         "zh-Hans" : {
@@ -662,6 +672,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "输入 API 配置以使用 OpenAI 翻译服务。\n你也可以稍后在设置中配置。"
+          }
+        }
+      }
+    },
+    "Excluded Apps" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "排除应用"
           }
         }
       }

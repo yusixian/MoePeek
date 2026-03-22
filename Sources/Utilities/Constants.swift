@@ -51,6 +51,7 @@ enum TextDetectionMode: String, CaseIterable, Defaults.Serializable {
 
 enum SettingsTab: String, Defaults.Serializable {
     case general
+    case excludedApps
     case services
     case providerOrder
     case about
@@ -86,6 +87,7 @@ extension Defaults.Keys {
     // Auto-detect text selection
     static let isAutoDetectEnabled = Key<Bool>("isAutoDetectEnabled", default: true)
     static let textDetectionMode = Key<TextDetectionMode>("textDetectionMode", default: .full)
+    static let excludedAppBundleIDs = Key<Set<String>>("excludedAppBundleIDs", default: [])
 
     // Apps excluded from Tier 3 (⌘C simulation) even in full mode
     static let tier3ExcludedBundleIDs = Key<Set<String>>(

@@ -72,6 +72,8 @@ final class SelectionMonitor {
         guard Defaults[.isAutoDetectEnabled], !isSuppressed else { return }
 
         let frontBundleID = NSWorkspace.shared.frontmostApplication?.bundleIdentifier ?? ""
+        guard !Defaults[.excludedAppBundleIDs].contains(frontBundleID) else { return }
+
         let isFinderFrontmost = frontBundleID == "com.apple.finder"
         let mode = Defaults[.textDetectionMode]
 
