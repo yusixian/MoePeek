@@ -6,6 +6,7 @@ import SwiftUI
 struct GeneralSettingsView: View {
     @Default(.targetLanguage) private var targetLanguage
     @Default(.isAutoDetectEnabled) private var isAutoDetectEnabled
+    @Default(.textDetectionMode) private var textDetectionMode
     @Default(.showInDock) private var showInDock
     @Default(.popupDefaultWidth) private var popupDefaultWidth
     @Default(.popupDefaultHeight) private var popupDefaultHeight
@@ -14,6 +15,17 @@ struct GeneralSettingsView: View {
     @Default(.sourceLanguage) private var sourceLanguage
     @Default(.detectionConfidenceThreshold) private var confidenceThreshold
     @Default(.appLanguage) private var appLanguage
+
+    private var textDetectionModeDescription: String {
+        switch textDetectionMode {
+        case .conservative:
+            String(localized: "Uses Accessibility API only. Most compatible with remote desktops and virtual machines, but may not detect text in some apps.")
+        case .standard:
+            String(localized: "Uses Accessibility API + AppleScript (Safari). Covers most apps without simulating keystrokes.")
+        case .full:
+            String(localized: "Uses all detection methods including ⌘C simulation. Best coverage, but may interfere with remote desktop apps and keyboard shortcut recording.")
+        }
+    }
 
     @State private var launchAtLogin = SMAppService.mainApp.status == .enabled
     @State private var showRestartAlert = false
@@ -74,6 +86,18 @@ struct GeneralSettingsView: View {
                 }
 
                 Toggle("Show floating icon on text selection", isOn: $isAutoDetectEnabled)
+
+                if isAutoDetectEnabled {
+                    Picker("Text Detection Mode:", selection: $textDetectionMode) {
+                        Text("Conservative").tag(TextDetectionMode.conservative)
+                        Text("Standard").tag(TextDetectionMode.standard)
+                        Text("Full").tag(TextDetectionMode.full)
+                    }
+
+                    Text(textDetectionModeDescription)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
             }
 
             Section("Language Detection") {

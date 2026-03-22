@@ -494,6 +494,16 @@
         }
       }
     },
+    "Conservative" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保守"
+          }
+        }
+      }
+    },
     "Copy" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -728,6 +738,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "源语言："
+          }
+        }
+      }
+    },
+    "Full" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完整"
           }
         }
       }
@@ -1882,6 +1902,16 @@
         }
       }
     },
+    "Standard" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "标准"
+          }
+        }
+      }
+    },
     "Status" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -1986,6 +2016,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "测试连接"
+          }
+        }
+      }
+    },
+    "Text Detection Mode:" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "划词检测模式："
           }
         }
       }
@@ -2146,6 +2187,39 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未选择下方模型时使用此模型。"
+          }
+        }
+      }
+    },
+    "Uses Accessibility API + AppleScript (Safari). Covers most apps without simulating keystrokes." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用 Accessibility API + AppleScript (Safari)。覆盖大多数应用，无需模拟按键。"
+          }
+        }
+      }
+    },
+    "Uses Accessibility API only. Most compatible with remote desktops and virtual machines, but may not detect text in some apps." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "仅使用 Accessibility API。与远程桌面和虚拟机兼容性最好，但部分应用可能无法检测文字。"
+          }
+        }
+      }
+    },
+    "Uses all detection methods including ⌘C simulation. Best coverage, but may interfere with remote desktop apps and keyboard shortcut recording." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用所有检测方式，包括 ⌘C 模拟。覆盖范围最广，但可能影响远程桌面应用和键盘快捷键录制。"
           }
         }
       }

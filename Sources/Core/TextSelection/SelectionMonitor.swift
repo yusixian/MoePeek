@@ -71,7 +71,9 @@ final class SelectionMonitor {
     private func handleMouseUp(at point: CGPoint, clickCount: Int) {
         guard Defaults[.isAutoDetectEnabled], !isSuppressed else { return }
 
-        let isFinderFrontmost = NSWorkspace.shared.frontmostApplication?.bundleIdentifier == "com.apple.finder"
+        let frontBundleID = NSWorkspace.shared.frontmostApplication?.bundleIdentifier ?? ""
+        let isFinderFrontmost = frontBundleID == "com.apple.finder"
+        let mode = Defaults[.textDetectionMode]
 
         // Determine if the gesture looks like a text selection (drag or multi-click)
         var wasDragOrMultiClick = clickCount >= 2
@@ -103,6 +105,9 @@ final class SelectionMonitor {
             // Only attempt fallback tiers if the gesture looks like a selection
             guard wasDragOrMultiClick else { return }
 
+            // Conservative mode: only AX API, stop here
+            guard mode != .conservative else { return }
+
             // Tier 2: AppleScript — Safari-specific JS selection (Finder won't match)
             if let text = await AppleScriptGrabber.grabFromSafari(),
                !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
@@ -112,10 +117,11 @@ final class SelectionMonitor {
 
             guard !Task.isCancelled else { return }
 
-            // Finder file/item drag gestures should not trigger clipboard-based detection.
-            // Tier 1 (AX) already handles Finder correctly (file rows don't expose text attributes).
-            // This guard prevents Tier 3 clipboard simulation from copying file paths.
-            guard !isFinderFrontmost else { return }
+            // Tier 3 gate: require full mode, exclude Finder and remote desktop apps
+            guard mode == .full,
+                  !isFinderFrontmost,
+                  !Defaults[.tier3ExcludedBundleIDs].contains(frontBundleID)
+            else { return }
 
             // Short-circuit before Tier 3: if the clipboard changed since mouse-up,
             // the user already pressed ⌘+C — read directly without simulating another copy.

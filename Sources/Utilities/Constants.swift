@@ -39,6 +39,14 @@ enum AppLanguage: String, CaseIterable, Defaults.Serializable {
     }
 }
 
+// MARK: - Text Detection Mode
+
+enum TextDetectionMode: String, CaseIterable, Defaults.Serializable {
+    case conservative  // Tier 1 only (AX API)
+    case standard      // Tier 1 + Tier 2 (AX + AppleScript)
+    case full          // Tier 1 + Tier 2 + Tier 3 (AX + AppleScript + ⌘C simulation)
+}
+
 // MARK: - Settings Tab
 
 enum SettingsTab: String, Defaults.Serializable {
@@ -77,6 +85,20 @@ extension Defaults.Keys {
 
     // Auto-detect text selection
     static let isAutoDetectEnabled = Key<Bool>("isAutoDetectEnabled", default: true)
+    static let textDetectionMode = Key<TextDetectionMode>("textDetectionMode", default: .full)
+
+    // Apps excluded from Tier 3 (⌘C simulation) even in full mode
+    static let tier3ExcludedBundleIDs = Key<Set<String>>(
+        "tier3ExcludedBundleIDs",
+        default: [
+            "com.microsoft.rdc.macos",           // Windows App
+            "com.microsoft.rdc.osx",             // Microsoft Remote Desktop (legacy)
+            "net.parallels.desktop.console",     // Parallels Desktop
+            "com.vmware.fusion",                 // VMware Fusion
+            "com.citrix.receiver.icaviewer.mac", // Citrix Workspace
+            "com.realvnc.vncviewer",             // RealVNC Viewer
+        ]
+    )
 
     // Appearance
     static let showInDock = Key<Bool>("showInDock", default: true)
